@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "ZeldaLikeGame.sln"
+    "dotnet.defaultSolution": "zeldalikegame.sln"
 }

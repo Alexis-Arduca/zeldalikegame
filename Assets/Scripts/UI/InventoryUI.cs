@@ -17,7 +17,7 @@ public class InventoryUI : MonoBehaviour
         GameManager gameManager = FindObjectOfType<GameManager>();
         if (gameManager != null)
         {
-            inventory = gameManager.inventory;
+            inventory = gameManager.GetInventory();
         }
         else
         {
@@ -44,6 +44,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         selectedIndex = i;
                         EquipSelectedItem();
+                        inventoryPanel.SetActive(!inventoryPanel.activeSelf);
                         break;
                     }
                 }

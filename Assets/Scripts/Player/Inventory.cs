@@ -33,6 +33,7 @@ public class Inventory
             if (item.itemName == itemName)
             {
                 item.isEquipped = true;
+                Debug.Log($"{itemName} has been equipped.");
                 break;
             }
         }
@@ -45,12 +46,12 @@ public class Inventory
             if (item.itemName == itemName)
             {
                 item.isEquipped = false;
+                Debug.Log($"{itemName} has been unequipped.");
                 break;
             }
         }
     }
 
-    // Pour debug : afficher le contenu de l'inventaire
     public void PrintInventory()
     {
         foreach (Item item in items)

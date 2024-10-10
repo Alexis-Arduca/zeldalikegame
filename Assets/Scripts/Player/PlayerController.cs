@@ -6,15 +6,16 @@ public class PlayerController : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private Inventory inventory;
+    private GameManager gameManager;
 
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
-
         GameManager gameManager = FindObjectOfType<GameManager>();
+
         if (gameManager != null)
         {
-            inventory = gameManager.inventory;
+            inventory = gameManager.GetInventory();
         }
         else
         {
@@ -33,6 +34,10 @@ public class PlayerController : MonoBehaviour
             {
                 equippedItem.Use();
             }
+            else
+            {
+                Debug.Log("No item equipped.");
+            }
         }
     }
 
@@ -42,7 +47,6 @@ public class PlayerController : MonoBehaviour
         return inventory;
     }
 
-    // Méthode pour simuler l'obtention d'un nouvel objet
     public void ObtainItem(Item item)
     {
         inventory.AddItem(item);
