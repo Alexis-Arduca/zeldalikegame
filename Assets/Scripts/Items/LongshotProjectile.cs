@@ -12,7 +12,11 @@ public class LongshotProjectile : MonoBehaviour
     {
         this.player = player;
 
-        direction = player.transform.right;
+        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            direction = playerMovement.GetLastDirection();
+        }
     }
 
     void Update()
@@ -34,7 +38,7 @@ public class LongshotProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Wall"))
+        if (collision.CompareTag("Wall") || collision.CompareTag("Chest"))
         {
             isRetracting = true;
             speed = 10f;

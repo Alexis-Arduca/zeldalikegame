@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Rock
   - Wall
+  - VoidZone
+  - Chest
   layers:
   - Default
   - TransparentFX

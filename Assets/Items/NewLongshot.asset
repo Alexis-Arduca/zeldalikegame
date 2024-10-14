@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a1932ac9536e284fbaad2938b7807b9, type: 3}
+  m_Name: NewLongshot
+  m_EditorClassIdentifier: 
+  itemName: Longshot
+  isEquipped: 0
+  itemSprite: {fileID: 21300000, guid: ad3d9e880528e0040977cb1ea4f5567f, type: 3}
+  longshotPrefab: {fileID: 6247103074902258675, guid: e96166743db9e714b9c9b79c97517c87, type: 3}

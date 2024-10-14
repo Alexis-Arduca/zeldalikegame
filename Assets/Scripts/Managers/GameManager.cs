@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     {
         inventory = new Inventory();
 
-        inventory.AddItem(new Bow(bowSprite, arrowPrefab));
-        inventory.AddItem(new Longshot(longshotSprite, longshotPrefab));
+        // inventory.AddItem(new Bow(bowSprite, arrowPrefab));
+        // inventory.AddItem(new Longshot(longshotSprite, longshotPrefab));
     }
 
     public Inventory GetInventory()

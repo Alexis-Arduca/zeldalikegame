@@ -1,13 +1,12 @@
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "NewLongshot", menuName = "Inventory/NewLongshot")]
 public class Longshot : Item
 {
     public GameObject longshotPrefab;
-    private GameObject longshotInstance;
 
-    public Longshot(Sprite sprite, GameObject longshotPrefab) : base("Longshot", sprite)
+    public Longshot() : base("Longshot", null)
     {
-        this.longshotPrefab = longshotPrefab;
     }
 
     public override void Use()
@@ -23,12 +22,38 @@ public class Longshot : Item
 
         if (player != null)
         {
-            longshotInstance = GameObject.Instantiate(longshotPrefab, player.transform.position, Quaternion.identity);
-
+            GameObject longshotInstance = GameObject.Instantiate(longshotPrefab, player.transform.position, Quaternion.identity);
             LongshotProjectile longshotScript = longshotInstance.GetComponent<LongshotProjectile>();
+
             if (longshotScript != null)
             {
                 longshotScript.Initialize(player);
+                PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+                if (playerMovement != null)
+                {
+                    if (playerMovement.GetLastDirection().x < 0)
+                    {
+                        longshotScript.transform.localScale = new Vector3(-0.4f, 0.4f, 0.4f);
+                    }
+                    else if (playerMovement.GetLastDirection().x > 0)
+                    {
+                        longshotScript.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                    }
+
+                    if (playerMovement.GetLastDirection().y > 0)
+                    {
+                        longshotScript.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                        longshotScript.transform.rotation = Quaternion.Euler(0, 0, 90);
+                        longshotScript.direction = Vector2.right;
+                    }
+                    else if (playerMovement.GetLastDirection().y < 0)
+                    {
+                        longshotScript.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                        longshotScript.transform.rotation = Quaternion.Euler(0, 0, -90);
+                        longshotScript.direction = Vector2.right;
+                    }
+                }
             }
         }
         else

@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private PlayerMovement playerMovement;
     private Inventory inventory;
+    private PlayerMovement playerMovement;
+    private PlayerAttack playerAttack;
+    private PlayerLife playerLife;
     private GameManager gameManager;
 
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        playerAttack = GetComponent<PlayerAttack>();
+        playerLife = GetComponent<PlayerLife>();
         GameManager gameManager = FindObjectOfType<GameManager>();
 
         if (gameManager != null)
@@ -40,7 +44,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
 
     public Inventory GetInventory()
     {
