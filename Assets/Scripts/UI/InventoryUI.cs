@@ -9,6 +9,11 @@ public class InventoryUI : MonoBehaviour
     public Image[] itemImages;
     private int selectedIndex;
 
+    public Sprite redPotionSprite;
+    public Sprite bluePotionSprite;
+    public Sprite fairySprite;
+    public Sprite emptySprite;
+
     void Start()
     {
         inventoryPanel.SetActive(false);
@@ -29,28 +34,28 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
+        if (Input.GetKeyDown(KeyCode.K)) {
             ToggleInventory();
         }
 
-        if (inventoryPanel.activeSelf)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                for (int i = 0; i < itemImages.Length; i++)
-                {
-                    if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[i].rectTransform, Input.mousePosition))
-                    {
-                        selectedIndex = i;
-                        EquipSelectedItem();
-                        inventoryPanel.SetActive(!inventoryPanel.activeSelf);
-                        break;
+        if (inventoryPanel.activeSelf) {
+            if (Input.GetMouseButtonDown(0)) {
+                foreach (Item item in inventory.items) {
+                    int slotIndex = item.slotIndex;
+
+                    if (slotIndex >= 0 && slotIndex < itemImages.Length && itemImages[slotIndex].gameObject.activeSelf) {
+                        if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition)) {
+                            selectedIndex = slotIndex;
+                            EquipSelectedItem();
+                            inventoryPanel.SetActive(!inventoryPanel.activeSelf);
+                            break;
+                        }
                     }
                 }
             }
         }
     }
+
 
     void ToggleInventory()
     {
@@ -64,29 +69,56 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateItemDisplay()
     {
-        for (int i = 0; i < itemImages.Length; i++)
-        {
-            if (i < inventory.items.Count)
-            {
-                Item item = inventory.items[i];
-                itemImages[i].sprite = item.itemSprite;
-                itemImages[i].color = item.isEquipped ? Color.yellow : Color.white;
-                itemImages[i].gameObject.SetActive(true);
-            }
-            else
-            {
-                itemImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < itemImages.Length; i++) {
+            itemImages[i].gameObject.SetActive(false);
+        }
+
+        foreach (Item item in inventory.items) {
+            int slotIndex = item.slotIndex;
+
+            if (slotIndex >= 0 && slotIndex < itemImages.Length) {
+                if (item is Bottle bottle) {
+                    if (bottle.GetRedPotion()) {
+                        itemImages[slotIndex].sprite = redPotionSprite;
+                    } else if (bottle.GetBluePotion()) {
+                        itemImages[slotIndex].sprite = bluePotionSprite;
+                    } else if (bottle.GetFairy()) {
+                        itemImages[slotIndex].sprite = fairySprite;
+                    } else {
+                        itemImages[slotIndex].sprite = emptySprite;
+                    }
+
+                    itemImages[slotIndex].color = item.isEquipped ? Color.yellow : Color.white;
+                }
+                else
+                {
+                    itemImages[slotIndex].sprite = item.itemSprite;
+                    itemImages[slotIndex].color = item.isEquipped ? Color.yellow : Color.white;
+                }
+
+                itemImages[slotIndex].gameObject.SetActive(true);
             }
         }
     }
 
+
     void EquipSelectedItem()
     {
-        if (selectedIndex < inventory.items.Count)
-        {
-            inventory.UnequipItem(inventory.GetEquippedItem()?.itemName);
-            inventory.EquipItem(inventory.items[selectedIndex].itemName);
-            UpdateItemDisplay();
+        inventory.UnequipItem(inventory.GetEquippedItem()?.itemName);
+
+        Item itemToEquip = null;
+
+        foreach (Item item in inventory.items) {
+            if (item.slotIndex == selectedIndex) {
+                itemToEquip = item;
+                break;
+            }
         }
+
+        if (itemToEquip != null) {
+            inventory.EquipItem(itemToEquip.itemName);
+        }
+
+        UpdateItemDisplay();
     }
 }

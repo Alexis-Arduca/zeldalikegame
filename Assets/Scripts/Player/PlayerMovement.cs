@@ -24,13 +24,11 @@ public class PlayerMovement : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal") * moveSpeed;
         movement.y = Input.GetAxisRaw("Vertical") * moveSpeed;
 
-        if (movement.x != 0 || movement.y != 0)
-        {
+        if (movement.x != 0 || movement.y != 0) {
             animator.SetBool("isMoving", true);
             lastDirection = movement.normalized;
         }
-        else
-        {
+        else {
             animator.SetFloat("lastX", lastDirection.x);
             animator.SetFloat("lastY", lastDirection.y);
             animator.SetBool("isMoving", false);

@@ -17,13 +17,8 @@ public class ChestItem : MonoBehaviour
         spriteRenderer.sprite = closeChest;
     }
 
-    void Update()
-    {}
-
     private void OnTriggerStay2D(Collider2D other)
     {
-        Debug.Log("Enter");
-
         if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.O))
         {
             if (!isOpen)
@@ -31,11 +26,6 @@ public class ChestItem : MonoBehaviour
                 OpenChest(other.GetComponent<PlayerController>());
             }
         }
-    }
-
-    private void OnExitStay2D(Collider2D other)
-    {
-        Debug.Log("Exit");
     }
 
     void OpenChest(PlayerController player)
@@ -47,6 +37,14 @@ public class ChestItem : MonoBehaviour
         {
             player.ObtainItem(itemInChest);
             Debug.Log($"{itemInChest.itemName} obtenu !");
+
+            GameObject itemDisplay = new GameObject("ItemDisplay");
+            itemDisplay.transform.position = transform.position + new Vector3(0, 0.5f, 0);
+
+            SpriteRenderer itemSpriteRenderer = itemDisplay.AddComponent<SpriteRenderer>();
+            itemSpriteRenderer.sprite = itemInChest.itemSprite;
+
+            itemDisplay.AddComponent<ChestAnimation>().StartFloating();
         }
     }
 }

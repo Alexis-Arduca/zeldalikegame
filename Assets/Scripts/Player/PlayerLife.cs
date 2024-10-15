@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerLife : MonoBehaviour
 {
+    private Inventory inventory;
+    private GameManager gameManager;
     private int maxPossibleHeart;
     private int maxHeart;
     private double currentHeart;
@@ -19,6 +21,9 @@ public class PlayerLife : MonoBehaviour
         currentHeart = 3;
         heartFragment = 0;
         defense = 0;
+    
+        gameManager = FindObjectOfType<GameManager>();
+        inventory = gameManager.GetInventory();
     }
 
     // Update is called once per frame
@@ -26,8 +31,37 @@ public class PlayerLife : MonoBehaviour
     {
         if (currentHeart <= 0)
         {
-            PlayerDeath();
+            Bottle bottleWithFairy = GetBottleWithFairy();
+            currentHeart = 0;
+                
+            if (bottleWithFairy != null)
+            {
+                bottleWithFairy.Use();
+            }
+            else
+            {
+                PlayerDeath();
+            }
         }
+    }
+
+    private Bottle GetBottleWithFairy()
+    {
+        for (int i = 0; i < inventory.items.Count; i++)
+        {
+            Item item = inventory.items[i];
+            if (item is Bottle bottle && bottle.GetFairy())
+            {
+                return bottle;
+            }
+        }
+        return null;
+    }
+
+
+    public void UpdateCurrentHeart(double newHeart)
+    {
+        currentHeart = newHeart;
     }
 
     public double GetMaxHeart()

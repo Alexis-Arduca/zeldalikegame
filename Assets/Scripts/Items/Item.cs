@@ -5,6 +5,7 @@ public class Item : ScriptableObject
 {
     public string itemName;
     public bool isEquipped;
+    public int slotIndex;
     public Sprite itemSprite;
 
     public Item(string name, Sprite sprite)

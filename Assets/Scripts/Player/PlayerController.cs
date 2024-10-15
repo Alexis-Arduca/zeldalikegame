@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         playerAttack = GetComponent<PlayerAttack>();
         playerLife = GetComponent<PlayerLife>();
-        GameManager gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>();
 
         if (gameManager != null)
         {
@@ -43,6 +43,31 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("No item equipped.");
             }
         }
+
+        ///====================///
+        /// Debug test command ///
+        ///====================///
+
+        // RedPotion
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            ObtainPotion(1);
+        }
+        // BluePotion
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            ObtainPotion(2);
+        }
+        // Fairy
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ObtainPotion(3);
+        }
+        // Lose Heart
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            playerLife.TakeDamage(1);
+        }
     }
 
     public Inventory GetInventory()
@@ -56,4 +81,22 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Item obtenu: {item.itemName}");
     }
 
+    public void ObtainPotion(int potion)
+    {
+        for (int i = 0; i < inventory.items.Count; i++)
+        {
+            Item item = inventory.items[i];
+
+            if (item is Bottle bottle && bottle.IsEmpty() == true)
+            {
+                if (potion == 1) {
+                    bottle.SetRedPotion();
+                } else if (potion == 2) {
+                    bottle.SetBluePotion();
+                } else if (potion == 3) {
+                    bottle.SetFairy();
+                }
+            }
+        }
+    }
 }

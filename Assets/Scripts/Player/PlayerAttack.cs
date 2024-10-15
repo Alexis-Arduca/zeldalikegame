@@ -6,8 +6,8 @@ public class PlayerAttack : MonoBehaviour
 {
     private Animator animator;
     private bool isAttacking;
-    private float attackCooldown = 0.5f;
-    private float nextAttackTime = 0;
+    // private float attackCooldown = 0.5f;
+    // private float nextAttackTime = 0;
 
     void Start()
     {
@@ -17,11 +17,11 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !isAttacking && Time.time >= nextAttackTime)
-        {
-            StartAttack();
-            nextAttackTime = Time.time + attackCooldown;
-        }
+        // if (Input.GetMouseButtonDown(0) && !isAttacking && Time.time >= nextAttackTime)
+        // {
+        //     StartAttack();
+        //     nextAttackTime = Time.time + attackCooldown;
+        // }
     }
 
     void StartAttack()
