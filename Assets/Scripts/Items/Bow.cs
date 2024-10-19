@@ -4,6 +4,8 @@ using UnityEngine;
 public class Bow : Item
 {
     public GameObject arrowPrefab;
+    public int nbArrow = 30;
+    public int maxArrow = 30;
 
     public Bow() : base("Bow", null)
     {
@@ -11,8 +13,12 @@ public class Bow : Item
 
     public override void Use()
     {
-        Debug.Log("Shoot an Arrow with the bow!");
-        ShootArrow();
+        if (nbArrow > 0) {
+            nbArrow -= 1;
+            Debug.Log("Shoot an Arrow with the bow!");
+            ShootArrow();
+        }
+        Debug.Log("No arrow left");
     }
 
     private void ShootArrow()

@@ -17,3 +17,5 @@ MonoBehaviour:
   slotIndex: 2
   itemSprite: {fileID: 21300000, guid: 3393500bd32e45740b47cd2902193757, type: 3}
   arrowPrefab: {fileID: 931401654705580182, guid: c79f75fdb0fb53049bdacd69a63413c8, type: 3}
+  nbArrow: 30
+  maxArrow: 30

@@ -5,6 +5,7 @@ public class LongshotProjectile : MonoBehaviour
     public float speed = 15f;
     public Vector2 direction;
     private GameObject player;
+    private PlayerMovement playerMovement;
 
     private bool isRetracting = false;
 
@@ -12,10 +13,11 @@ public class LongshotProjectile : MonoBehaviour
     {
         this.player = player;
 
-        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+        playerMovement = player.GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {
             direction = playerMovement.GetLastDirection();
+            playerMovement.UsingItem();
         }
     }
 
@@ -27,6 +29,7 @@ public class LongshotProjectile : MonoBehaviour
 
             if (Vector2.Distance(player.transform.position, transform.position) < 0.1f)
             {
+                playerMovement.UsingItem();
                 Destroy(gameObject);
             }
         }
@@ -38,10 +41,13 @@ public class LongshotProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Wall") || collision.CompareTag("Chest"))
+        if (collision.CompareTag("Wood") || collision.CompareTag("Chest"))
         {
             isRetracting = true;
             speed = 10f;
-        } 
+        } else if (collision.CompareTag("Wall")) {
+            playerMovement.UsingItem();
+            Destroy(gameObject);
+        }
     }
 }

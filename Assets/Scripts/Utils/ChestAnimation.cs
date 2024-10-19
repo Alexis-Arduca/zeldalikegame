@@ -14,7 +14,7 @@ public class ChestAnimation : MonoBehaviour
     private IEnumerator FloatAndDisappear()
     {
         Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + new Vector3(0, floatHeight, 0);
+        Vector3 targetPosition = startPosition + new Vector3(0, floatHeight, -1);
 
         float elapsedTime = 0;
 

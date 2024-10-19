@@ -9,12 +9,18 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 lastDirection;
+    private bool isUsingItem;
+    private bool isOnWater;
+    private Vector2 lastSafePosition;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         lastDirection = Vector2.down;
+        isUsingItem = false;
+        isOnWater = false;
+        lastSafePosition = transform.position;
 
         animator.SetBool("isMoving", false);
     }
@@ -24,11 +30,24 @@ public class PlayerMovement : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal") * moveSpeed;
         movement.y = Input.GetAxisRaw("Vertical") * moveSpeed;
 
-        if (movement.x != 0 || movement.y != 0) {
+        if (isOnWater && !isUsingItem)
+        {
+            transform.position = lastSafePosition;
+            isOnWater = false;
+            return;
+        }
+
+        if (!isOnWater)
+        {
+            lastSafePosition = transform.position;
+        }
+
+        if (isUsingItem == false && (movement.x != 0 || movement.y != 0)) {
             animator.SetBool("isMoving", true);
             lastDirection = movement.normalized;
-        }
-        else {
+        } else {
+            movement.x = 0;
+            movement.y = 0;
             animator.SetFloat("lastX", lastDirection.x);
             animator.SetFloat("lastY", lastDirection.y);
             animator.SetBool("isMoving", false);
@@ -43,5 +62,10 @@ public class PlayerMovement : MonoBehaviour
     public Vector2 GetLastDirection()
     {
         return lastDirection;
+    }
+
+    public void UsingItem()
+    {
+        isUsingItem = !isUsingItem;
     }
 }

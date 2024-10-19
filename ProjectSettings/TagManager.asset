@@ -9,6 +9,12 @@ TagManager:
   - VoidZone
   - Chest
   - BottleTag
+  - Water
+  - Wood
+  - Door
+  - Arrow
+  - Boomerang
+  - Longshot
   layers:
   - Default
   - TransparentFX
