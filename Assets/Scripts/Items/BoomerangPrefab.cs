@@ -47,6 +47,18 @@ public class BoomerangPrefab : MonoBehaviour
             isReturning = true;
         }
 
+        if (collision.CompareTag("Enemy")) {
+            isReturning = true;
+
+            Bokoblin enemy = collision.GetComponent<Bokoblin>();
+            if (enemy != null)
+            {
+                float stunDuration = 2.0f;
+                enemy.ApplyStun(stunDuration);
+                Debug.Log("Ennemi étourdi par le boomerang : " + collision.name);
+            }
+        }
+
         if (collision.CompareTag("Player") && isReturning) {
             isReturning = false;
             Destroy(gameObject);

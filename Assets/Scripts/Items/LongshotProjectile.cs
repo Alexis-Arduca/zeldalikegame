@@ -30,7 +30,7 @@ public class LongshotProjectile : MonoBehaviour
             if (Vector2.Distance(player.transform.position, transform.position) < 0.1f)
             {
                 playerMovement.UsingItem();
-                Destroy(gameObject);
+                DestroyLongshot();
             }
         }
         else
@@ -45,9 +45,27 @@ public class LongshotProjectile : MonoBehaviour
         {
             isRetracting = true;
             speed = 10f;
-        } else if (collision.CompareTag("Wall")) {
-            playerMovement.UsingItem();
-            Destroy(gameObject);
         }
+        else if (collision.CompareTag("Wall"))
+        {
+            playerMovement.UsingItem();
+            DestroyLongshot();
+        }
+        else if (collision.CompareTag("Enemy"))
+        {
+            Bokoblin enemy = collision.GetComponent<Bokoblin>();
+            if (enemy != null)
+            {
+                float stunDuration = 2.0f;
+                enemy.ApplyStun(stunDuration);
+                Debug.Log("Ennemi étourdi par le boomerang : " + collision.name);
+            }
+        }
+    }
+
+    private void DestroyLongshot()
+    {
+        Longshot.ResetLongshotInstance();
+        Destroy(gameObject);
     }
 }

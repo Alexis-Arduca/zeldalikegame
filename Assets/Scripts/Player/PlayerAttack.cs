@@ -5,39 +5,79 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     private Animator animator;
-    private bool isAttacking;
-    // private float attackCooldown = 0.5f;
-    // private float nextAttackTime = 0;
 
-    void Start()
+    public GameObject attackZoneUp;
+    public GameObject attackZoneDown;
+    public GameObject attackZoneLeft;
+    public GameObject attackZoneRight;
+
+    public float attackDuration = 0.3f;
+
+    private void Start()
     {
         animator = GetComponent<Animator>();
-        isAttacking = false;
+
+        attackZoneUp.SetActive(false);
+        attackZoneDown.SetActive(false);
+        attackZoneLeft.SetActive(false);
+        attackZoneRight.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
-        // if (Input.GetMouseButtonDown(0) && !isAttacking && Time.time >= nextAttackTime)
-        // {
-        //     StartAttack();
-        //     nextAttackTime = Time.time + attackCooldown;
-        // }
+        if (Input.GetMouseButtonDown(0))
+        {
+            StopAllCoroutines();
+            StartCoroutine(PerformAttack());
+        }
     }
 
-    void StartAttack()
+    private IEnumerator PerformAttack()
     {
-        isAttacking = true;
-        animator.SetBool("isAttacking", true);
+        Vector2 attackDirection = GetAttackDirection();
+
+        ActivateAttackZone(attackDirection);
+
+        animator.SetTrigger("Attack");
+
+        yield return new WaitForSeconds(attackDuration);
+
+        DeactivateAllAttackZones();
     }
 
-    public void EndAttack()
+    private Vector2 GetAttackDirection()
     {
-        isAttacking = false;
-        animator.SetBool("isAttacking", false);
+        if (Input.GetKey(KeyCode.UpArrow))
+            return Vector2.up;
+        if (Input.GetKey(KeyCode.DownArrow))
+            return Vector2.down;
+        if (Input.GetKey(KeyCode.LeftArrow))
+            return Vector2.left;
+        if (Input.GetKey(KeyCode.RightArrow))
+            return Vector2.right;
+
+        return Vector2.right;
     }
 
-    public bool IsAttacking()
+    private void ActivateAttackZone(Vector2 direction)
     {
-        return isAttacking;
+        DeactivateAllAttackZones();
+
+        if (direction == Vector2.up)
+            attackZoneUp.SetActive(true);
+        else if (direction == Vector2.down)
+            attackZoneDown.SetActive(true);
+        else if (direction == Vector2.left)
+            attackZoneLeft.SetActive(true);
+        else if (direction == Vector2.right)
+            attackZoneRight.SetActive(true);
+    }
+
+    private void DeactivateAllAttackZones()
+    {
+        attackZoneUp.SetActive(false);
+        attackZoneDown.SetActive(false);
+        attackZoneLeft.SetActive(false);
+        attackZoneRight.SetActive(false);
     }
 }

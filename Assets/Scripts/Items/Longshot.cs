@@ -4,6 +4,7 @@ using UnityEngine;
 public class Longshot : Item
 {
     public GameObject longshotPrefab;
+    private static GameObject currentLongshotInstance;
 
     public Longshot() : base("Longshot", null)
     {
@@ -11,8 +12,13 @@ public class Longshot : Item
 
     public override void Use()
     {
-        Debug.Log("Use Longshot!");
+        if (currentLongshotInstance != null)
+        {
+            Debug.Log("Can't use longshot currently");
+            return;
+        }
 
+        Debug.Log("Use Longshot!");
         ShootLongshot();
     }
 
@@ -22,8 +28,8 @@ public class Longshot : Item
 
         if (player != null)
         {
-            GameObject longshotInstance = GameObject.Instantiate(longshotPrefab, player.transform.position, Quaternion.identity);
-            LongshotProjectile longshotScript = longshotInstance.GetComponent<LongshotProjectile>();
+            currentLongshotInstance = Instantiate(longshotPrefab, player.transform.position, Quaternion.identity);
+            LongshotProjectile longshotScript = currentLongshotInstance.GetComponent<LongshotProjectile>();
 
             if (longshotScript != null)
             {
@@ -60,5 +66,10 @@ public class Longshot : Item
         {
             Debug.LogError("Player object not found!");
         }
+    }
+
+    public static void ResetLongshotInstance()
+    {
+        currentLongshotInstance = null;
     }
 }

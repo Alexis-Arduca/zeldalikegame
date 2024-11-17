@@ -4,6 +4,7 @@ public class Arrow : MonoBehaviour
 {
     public float speed = 10f;
     public Vector2 direction;
+    public int damage = 10;
 
     void Update()
     {
@@ -14,6 +15,14 @@ public class Arrow : MonoBehaviour
     {
         if (collision.CompareTag("Wall") || collision.CompareTag("Chest"))
         {
+            Destroy(gameObject);
+        } else if (collision.CompareTag("Enemy")) {
+            Enemy enemy = collision.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
+
             Destroy(gameObject);
         }
     }

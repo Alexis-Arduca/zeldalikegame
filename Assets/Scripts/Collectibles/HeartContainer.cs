@@ -11,6 +11,7 @@ public class HeartContainer : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerLife.HeartContainerUpdater();
+            GameEventsManager.instance.miscEvents.HeartContainerCollected();
             Destroy(gameObject);
         }
     }

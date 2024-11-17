@@ -11,6 +11,7 @@ public class PieceOfHeart : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerLife.HeartFragmentUpdater();
+            GameEventsManager.instance.miscEvents.HeartFragmentCollected();
             Destroy(gameObject);
         }
     }

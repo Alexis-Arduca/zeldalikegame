@@ -13,6 +13,9 @@ public class PlayerLife : MonoBehaviour
     private int defense;
     private int heartFragment;
 
+    public bool isInvincible = false;
+    public float invincibilityDuration = 1f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -76,12 +79,22 @@ public class PlayerLife : MonoBehaviour
 
     public void TakeDamage(double attack)
     {
+        if (isInvincible) return;
+
         double damage = Math.Max(attack - defense, 0);
         currentHeart -= damage;
-
         currentHeart = Math.Max(currentHeart, 0);
-        
+
         Debug.Log($"Player took {damage} damage. Current hearts: {currentHeart}");
+
+        StartCoroutine(BecomeTemporarilyInvincible());
+    }
+
+    private IEnumerator BecomeTemporarilyInvincible()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invincibilityDuration);
+        isInvincible = false;
     }
 
     public void HeartContainerUpdater()

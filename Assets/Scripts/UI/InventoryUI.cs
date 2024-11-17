@@ -1,11 +1,12 @@
 using UnityEngine;
-using UnityEngine.UI; // Assurez-vous d'utiliser UnityEngine.UI pour Image
+using UnityEngine.UI;
 using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
     public GameObject inventoryPanel;
     public Inventory inventory;
+    public QuestMenu questMenu;
     public Image[] itemImages;
     private int selectedIndex;
 
@@ -34,20 +35,27 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) {
-            ToggleInventory();
+        if (Input.GetKeyDown(KeyCode.K)) 
+        {
+            ToggleInventoryAndQuestMenu();
         }
 
-        if (inventoryPanel.activeSelf) {
-            if (Input.GetMouseButtonDown(0)) {
-                foreach (Item item in inventory.items) {
+        if (inventoryPanel.activeSelf)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                foreach (Item item in inventory.items)
+                {
                     int slotIndex = item.slotIndex;
 
-                    if (slotIndex >= 0 && slotIndex < itemImages.Length && itemImages[slotIndex].gameObject.activeSelf) {
-                        if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition)) {
+                    if (slotIndex >= 0 && slotIndex < itemImages.Length && itemImages[slotIndex].gameObject.activeSelf)
+                    {
+                        if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition))
+                        {
                             selectedIndex = slotIndex;
                             EquipSelectedItem();
-                            inventoryPanel.SetActive(!inventoryPanel.activeSelf);
+                            questMenu.questMenuPanel.SetActive(!questMenu.questMenuPanel.activeSelf);
+                            ToggleInventoryAndQuestMenu();
                             break;
                         }
                     }
@@ -56,11 +64,13 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-
-    void ToggleInventory()
+    void ToggleInventoryAndQuestMenu()
     {
-        inventoryPanel.SetActive(!inventoryPanel.activeSelf);
-        if (inventoryPanel.activeSelf)
+        bool isActive = !inventoryPanel.activeSelf;
+        inventoryPanel.SetActive(isActive);
+        
+
+        if (isActive)
         {
             selectedIndex = 0;
             UpdateItemDisplay();
@@ -69,22 +79,33 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateItemDisplay()
     {
-        for (int i = 0; i < itemImages.Length; i++) {
+        for (int i = 0; i < itemImages.Length; i++) 
+        {
             itemImages[i].gameObject.SetActive(false);
         }
 
-        foreach (Item item in inventory.items) {
+        foreach (Item item in inventory.items)
+        {
             int slotIndex = item.slotIndex;
 
-            if (slotIndex >= 0 && slotIndex < itemImages.Length) {
-                if (item is Bottle bottle) {
-                    if (bottle.GetRedPotion()) {
+            if (slotIndex >= 0 && slotIndex < itemImages.Length) 
+            {
+                if (item is Bottle bottle)
+                {
+                    if (bottle.GetRedPotion())
+                    {
                         itemImages[slotIndex].sprite = redPotionSprite;
-                    } else if (bottle.GetBluePotion()) {
+                    }
+                    else if (bottle.GetBluePotion())
+                    {
                         itemImages[slotIndex].sprite = bluePotionSprite;
-                    } else if (bottle.GetFairy()) {
+                    }
+                    else if (bottle.GetFairy())
+                    {
                         itemImages[slotIndex].sprite = fairySprite;
-                    } else {
+                    }
+                    else
+                    {
                         itemImages[slotIndex].sprite = emptySprite;
                     }
 
@@ -101,21 +122,23 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-
     void EquipSelectedItem()
     {
         inventory.UnequipItem(inventory.GetEquippedItem()?.itemName);
 
         Item itemToEquip = null;
 
-        foreach (Item item in inventory.items) {
-            if (item.slotIndex == selectedIndex) {
+        foreach (Item item in inventory.items)
+        {
+            if (item.slotIndex == selectedIndex)
+            {
                 itemToEquip = item;
                 break;
             }
         }
 
-        if (itemToEquip != null) {
+        if (itemToEquip != null)
+        {
             inventory.EquipItem(itemToEquip.itemName);
         }
 
