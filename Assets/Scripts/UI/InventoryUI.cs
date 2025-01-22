@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -8,6 +7,8 @@ public class InventoryUI : MonoBehaviour
     public Inventory inventory;
     public QuestMenu questMenu;
     public Image[] itemImages;
+    public Image equippedLeftImage;
+    public Image equippedRightImage;
     private int selectedIndex;
 
     public Sprite redPotionSprite;
@@ -31,6 +32,7 @@ public class InventoryUI : MonoBehaviour
         }
 
         UpdateItemDisplay();
+        UpdateEquippedImages();
     }
 
     void Update()
@@ -42,8 +44,10 @@ public class InventoryUI : MonoBehaviour
 
         if (inventoryPanel.activeSelf)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
+                bool isLeftClick = Input.GetMouseButtonDown(0);
+
                 foreach (Item item in inventory.items)
                 {
                     int slotIndex = item.slotIndex;
@@ -53,7 +57,7 @@ public class InventoryUI : MonoBehaviour
                         if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition))
                         {
                             selectedIndex = slotIndex;
-                            EquipSelectedItem();
+                            EquipSelectedItem(isLeftClick);
                             questMenu.questMenuPanel.SetActive(!questMenu.questMenuPanel.activeSelf);
                             ToggleInventoryAndQuestMenu();
                             break;
@@ -69,7 +73,6 @@ public class InventoryUI : MonoBehaviour
         bool isActive = !inventoryPanel.activeSelf;
         inventoryPanel.SetActive(isActive);
         
-
         if (isActive)
         {
             selectedIndex = 0;
@@ -108,23 +111,35 @@ public class InventoryUI : MonoBehaviour
                     {
                         itemImages[slotIndex].sprite = emptySprite;
                     }
-
-                    itemImages[slotIndex].color = item.isEquipped ? Color.yellow : Color.white;
                 }
                 else
                 {
                     itemImages[slotIndex].sprite = item.itemSprite;
-                    itemImages[slotIndex].color = item.isEquipped ? Color.yellow : Color.white;
+                }
+
+                if (item == inventory.GetEquippedItem(true))
+                {
+                    itemImages[slotIndex].color = Color.yellow;
+                }
+                else if (item == inventory.GetEquippedItem(false))
+                {
+                    itemImages[slotIndex].color = Color.cyan;
+                }
+                else
+                {
+                    itemImages[slotIndex].color = Color.white;
                 }
 
                 itemImages[slotIndex].gameObject.SetActive(true);
             }
         }
+
+        UpdateEquippedImages();
     }
 
-    void EquipSelectedItem()
+    void EquipSelectedItem(bool isLeftClick)
     {
-        inventory.UnequipItem(inventory.GetEquippedItem()?.itemName);
+        inventory.UnequipItem(isLeftClick);
 
         Item itemToEquip = null;
 
@@ -139,9 +154,36 @@ public class InventoryUI : MonoBehaviour
 
         if (itemToEquip != null)
         {
-            inventory.EquipItem(itemToEquip.itemName);
+            inventory.EquipItem(itemToEquip.itemName, isLeftClick);
         }
 
         UpdateItemDisplay();
+    }
+
+    void UpdateEquippedImages()
+    {
+        Item leftEquippedItem = inventory.GetEquippedItem(true);
+        if (leftEquippedItem != null)
+        {
+            equippedLeftImage.sprite = leftEquippedItem.itemSprite;
+            equippedLeftImage.color = Color.white;
+        }
+        else
+        {
+            equippedLeftImage.sprite = emptySprite;
+            equippedLeftImage.color = new Color(1, 1, 1, 0);
+        }
+
+        Item rightEquippedItem = inventory.GetEquippedItem(false);
+        if (rightEquippedItem != null)
+        {
+            equippedRightImage.sprite = rightEquippedItem.itemSprite;
+            equippedRightImage.color = Color.white;
+        }
+        else
+        {
+            equippedRightImage.sprite = emptySprite;
+            equippedRightImage.color = new Color(1, 1, 1, 0);
+        }
     }
 }

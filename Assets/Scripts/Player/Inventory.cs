@@ -6,6 +6,8 @@ public class Inventory
 {
     public List<Item> items;
     public List<Item> availableItems;
+    private Item equippedItemLeftClick;
+    private Item equippedItemRightClick;
 
     public Inventory()
     {
@@ -23,32 +25,48 @@ public class Inventory
 
     public bool HasItem(string itemName)
     {
-        return items.Exists(i => i.itemName == itemName && i.isEquipped);
+        return items.Exists(i => i.itemName == itemName && (i == equippedItemLeftClick || i == equippedItemRightClick));
     }
 
-    public void EquipItem(string itemName)
+    public void EquipItem(string itemName, bool isLeftClick)
     {
         foreach (Item item in items)
         {
             if (item.itemName == itemName)
             {
+                // Détermine quel emplacement équiper
+                if (isLeftClick)
+                {
+                    if (equippedItemLeftClick != null) equippedItemLeftClick.isEquipped = false;
+                    equippedItemLeftClick = item;
+                    Debug.Log($"{itemName} has been equipped on Left Click.");
+                }
+                else
+                {
+                    if (equippedItemRightClick != null) equippedItemRightClick.isEquipped = false;
+                    equippedItemRightClick = item;
+                    Debug.Log($"{itemName} has been equipped on Right Click.");
+                }
+
                 item.isEquipped = true;
-                Debug.Log($"{itemName} has been equipped.");
                 break;
             }
         }
     }
 
-    public void UnequipItem(string itemName)
+    public void UnequipItem(bool isLeftClick)
     {
-        foreach (Item item in items)
+        if (isLeftClick && equippedItemLeftClick != null)
         {
-            if (item.itemName == itemName)
-            {
-                item.isEquipped = false;
-                Debug.Log($"{itemName} has been unequipped.");
-                break;
-            }
+            Debug.Log($"{equippedItemLeftClick.itemName} has been unequipped from Left Click.");
+            equippedItemLeftClick.isEquipped = false;
+            equippedItemLeftClick = null;
+        }
+        else if (!isLeftClick && equippedItemRightClick != null)
+        {
+            Debug.Log($"{equippedItemRightClick.itemName} has been unequipped from Right Click.");
+            equippedItemRightClick.isEquipped = false;
+            equippedItemRightClick = null;
         }
     }
 
@@ -56,13 +74,15 @@ public class Inventory
     {
         foreach (Item item in items)
         {
-            string equippedStatus = item.isEquipped ? " (Equipped)" : "";
+            string equippedStatus = "";
+            if (item == equippedItemLeftClick) equippedStatus = " (Equipped on Left Click)";
+            else if (item == equippedItemRightClick) equippedStatus = " (Equipped on Right Click)";
             Debug.Log(item.itemName + equippedStatus);
         }
     }
 
-    public Item GetEquippedItem()
+    public Item GetEquippedItem(bool isLeftClick)
     {
-        return items.Find(item => item.isEquipped);
+        return isLeftClick ? equippedItemLeftClick : equippedItemRightClick;
     }
 }

@@ -33,15 +33,28 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Item equippedItem = inventory.GetEquippedItem();
-            if (equippedItem != null)
+            Item equippedItemLeft = inventory.GetEquippedItem(true);
+            if (equippedItemLeft != null)
             {
-                equippedItem.Use();
+                equippedItemLeft.Use();
             }
             else
             {
-                Debug.Log("No item equipped.");
+                Debug.Log("No item equipped on Left Click.");
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Item equippedItemRight = inventory.GetEquippedItem(false);
+            if (equippedItemRight != null)
+            {
+                equippedItemRight.Use();
+            }
+            else
+            {
+                Debug.Log("No item equipped on Right Click.");
+            } 
         }
 
         ///====================///
