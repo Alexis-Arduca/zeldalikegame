@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 public abstract class QuestStep : MonoBehaviour
 {
     private bool isFinished = false;
-    private bool gameIsFinished = false;
     private string questId;
     private string sideQuestId;
 

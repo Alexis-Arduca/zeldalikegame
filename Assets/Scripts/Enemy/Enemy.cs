@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public enum EnemyState { Idle, Patrolling, Chasing, Attacking }
+    public enum EnemyState { Idle, Patrolling, Chasing, Attacking, Frozen }
     protected EnemyState currentState;
 
     public int health;
@@ -12,7 +12,8 @@ public class Enemy : MonoBehaviour
     public float attackRange;
     public float patrolSpeed;
     public float attackCooldown;
-    public float patrolPauseDuration = 2f; // Temps de pause entre les déplacements
+    public float patrolPauseDuration = 2f;
+    public float freezeDuration = 3f;
 
     protected float attackTimer;
     protected Transform player;
@@ -21,12 +22,15 @@ public class Enemy : MonoBehaviour
     private Vector2 lastDirection;
     private float patrolPauseTimer;
     private Vector2[] directions = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+    
+    private float freezeTimer;
 
     protected virtual void Start()
     {
         currentState = EnemyState.Idle;
         attackTimer = 0;
-        
+        freezeTimer = 0;
+
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -39,6 +43,16 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         if (player == null) return;
+
+        if (currentState == EnemyState.Frozen)
+        {
+            freezeTimer -= Time.deltaTime;
+            if (freezeTimer <= 0)
+            {
+                Unfreeze();
+            }
+            return;
+        }
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -93,15 +107,14 @@ public class Enemy : MonoBehaviour
         if (patrolPauseTimer > 0)
         {
             patrolPauseTimer -= Time.deltaTime;
-            return; // Pas de déplacement pendant le temps de pause
+            return;
         }
 
         transform.position = Vector2.MoveTowards(transform.position, patrolPoint, patrolSpeed * Time.deltaTime);
 
-        // Vérifier si l'ennemi est arrivé à son point de patrouille
         if (Vector2.Distance(transform.position, patrolPoint) < 0.1f)
         {
-            patrolPauseTimer = patrolPauseDuration; // Déclencher le temps de pause
+            patrolPauseTimer = patrolPauseDuration;
             SetNewPatrolPoint();
         }
 
@@ -123,15 +136,31 @@ public class Enemy : MonoBehaviour
 
     protected void SetNewPatrolPoint()
     {
-        // Choisir une nouvelle direction aléatoire différente de la précédente
         Vector2 randomDirection;
         do
         {
             randomDirection = directions[Random.Range(0, directions.Length)];
-        } while (randomDirection == lastDirection); // Éviter les répétitions directes
+        } while (randomDirection == lastDirection);
 
         lastDirection = randomDirection;
         patrolPoint = (Vector2)transform.position + randomDirection * Random.Range(1f, detectionRange / 2f);
+    }
+
+    public void Freeze(float duration)
+    {
+        if (currentState != EnemyState.Frozen)
+        {
+            currentState = EnemyState.Frozen;
+            freezeTimer = duration;
+
+            GetComponent<SpriteRenderer>().color = Color.cyan;
+        }
+    }
+
+    private void Unfreeze()
+    {
+        currentState = EnemyState.Idle;
+        GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
