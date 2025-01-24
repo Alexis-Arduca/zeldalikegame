@@ -18,5 +18,10 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: 914f60fe9ba3eaf499ff23f2d7cdc6a8, type: 3}
   songs:
   - name: Song of Healing
+    id: 1
     sequence: 11010000120100001101000071000000
+    songClip: {fileID: 0}
+  - name: Song of Teleportation
+    id: 4
+    sequence: 7a000000710000007a00000071000000
     songClip: {fileID: 0}
