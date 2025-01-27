@@ -9,6 +9,7 @@ public class GameEventsManager : MonoBehaviour
 //     public InputEvents inputEvents;
 //     public PlayerEvents playerEvents;
     public QuestEvents questEvents;
+    public RupeeEvents rupeeEvents;
     public MiscEvents miscEvents;
 
     private void Awake()
@@ -23,6 +24,7 @@ public class GameEventsManager : MonoBehaviour
 //         inputEvents = new InputEvents();
 //         playerEvents = new PlayerEvents();
         questEvents = new QuestEvents();
+        rupeeEvents = new RupeeEvents();
         miscEvents = new MiscEvents();
     }
 }
