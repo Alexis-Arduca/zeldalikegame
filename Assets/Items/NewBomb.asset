@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NewBomb
   m_EditorClassIdentifier: 
   itemName: Bomb
-  isEquipped: 1
+  isEquipped: 0
   slotIndex: 4
   itemSprite: {fileID: 21300000, guid: df6a68720d2b12d4484090621f42ac61, type: 3}
   bomb: {fileID: 401705756882742953, guid: 1d6bfe10cf176594c8f7bbf26ed02686, type: 3}
