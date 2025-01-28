@@ -6,10 +6,9 @@ public class GameEventsManager : MonoBehaviour
     public static GameEventsManager instance { get; private set; }
     public GameObject mapUI;
 
-//     public InputEvents inputEvents;
-//     public PlayerEvents playerEvents;
     public QuestEvents questEvents;
     public RupeeEvents rupeeEvents;
+    public MagicEvents magicEvents;
     public MiscEvents miscEvents;
 
     private void Awake()
@@ -25,6 +24,7 @@ public class GameEventsManager : MonoBehaviour
 //         playerEvents = new PlayerEvents();
         questEvents = new QuestEvents();
         rupeeEvents = new RupeeEvents();
+        magicEvents = new MagicEvents();
         miscEvents = new MiscEvents();
     }
 }

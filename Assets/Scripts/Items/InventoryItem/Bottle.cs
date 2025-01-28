@@ -8,6 +8,7 @@ public class Bottle : Item
 {
     private bool redPotion;
     private bool bluePotion;
+    private bool greenPotion;
     private bool fairy;
     private PlayerLife playerLife;
 
@@ -19,6 +20,7 @@ public class Bottle : Item
     {
         redPotion = false;
         bluePotion = false;
+        greenPotion = false;
         fairy = false;
     }
 
@@ -27,13 +29,15 @@ public class Bottle : Item
         playerLife = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerLife>();
 
         if (redPotion) {
-            UseBottle(playerLife, 5);
+            HealBottle(playerLife, 5);
             redPotion = false;
         } else if (bluePotion) {
-            UseBottle(playerLife, playerLife.GetMaxHeart());
+            HealBottle(playerLife, playerLife.GetMaxHeart());
             bluePotion = false;
+        } else if (greenPotion) {
+            RefillBottle(80);
         } else if (fairy) {
-            UseBottle(playerLife, 8);
+            HealBottle(playerLife, 8);
             fairy = false;
         } else {
             // Pouvoir utiliser la bouteille pour attraper autre chose
@@ -41,7 +45,7 @@ public class Bottle : Item
         }
     }
 
-    private void UseBottle(PlayerLife playerLife, double healValue)
+    private void HealBottle(PlayerLife playerLife, double healValue)
     {
         double heal = playerLife.GetCurrentHeart() + healValue;
 
@@ -49,6 +53,12 @@ public class Bottle : Item
 
         playerLife.UpdateCurrentHeart(heal);
     }
+
+    private void RefillBottle(int value)
+    {
+        GameEventsManager.instance.magicEvents.OnMagicCollected(value);
+    }
+
 
     public void SetRedPotion()
     {
@@ -58,6 +68,11 @@ public class Bottle : Item
     public void SetBluePotion()
     {
         bluePotion = true;
+    }
+
+    public void SetGreenPotion()
+    {
+        greenPotion = true;
     }
 
     public void SetFairy()
@@ -75,6 +90,11 @@ public class Bottle : Item
         return bluePotion;
     }
 
+    public bool GetGreenPotion()
+    {
+        return greenPotion;
+    }
+
     public bool GetFairy()
     {
         return fairy;
@@ -82,7 +102,7 @@ public class Bottle : Item
 
     public bool IsEmpty()
     {
-        if (redPotion == false && bluePotion == false && fairy == false) {
+        if (redPotion == false && bluePotion == false && greenPotion == false && fairy == false) {
             return true;
         }
         return false;

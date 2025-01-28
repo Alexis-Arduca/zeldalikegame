@@ -18,7 +18,7 @@ public class RupeeManager : MonoBehaviour
 
     void OnDisable()
     {
-
+        GameEventsManager.instance.rupeeEvents.onRupeeCollected -= RupeeCollected; 
     }
 
     private void RupeeCollected(int rupee)

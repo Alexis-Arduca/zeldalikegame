@@ -13,6 +13,7 @@ public class InventoryUI : MonoBehaviour
 
     public Sprite redPotionSprite;
     public Sprite bluePotionSprite;
+    public Sprite greenPotionSprite;
     public Sprite fairySprite;
     public Sprite emptySprite;
 
@@ -98,17 +99,13 @@ public class InventoryUI : MonoBehaviour
                     if (bottle.GetRedPotion())
                     {
                         itemImages[slotIndex].sprite = redPotionSprite;
-                    }
-                    else if (bottle.GetBluePotion())
-                    {
+                    } else if (bottle.GetBluePotion()) {
                         itemImages[slotIndex].sprite = bluePotionSprite;
-                    }
-                    else if (bottle.GetFairy())
-                    {
+                    } else if (bottle.GetGreenPotion()) {
+                        itemImages[slotIndex].sprite = greenPotionSprite;
+                    } else if (bottle.GetFairy()) {
                         itemImages[slotIndex].sprite = fairySprite;
-                    }
-                    else
-                    {
+                    } else {
                         itemImages[slotIndex].sprite = emptySprite;
                     }
                 }
