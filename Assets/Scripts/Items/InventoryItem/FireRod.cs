@@ -4,7 +4,7 @@ using UnityEngine;
 public class FireRod : Item
 {
     public GameObject fireballPrefab;
-    private Transform spawnPoint;
+    private int magicCost = 20;
 
     public FireRod() : base("FireRod", null)
     {
@@ -14,20 +14,27 @@ public class FireRod : Item
     {
         base.Use();
 
-        spawnPoint = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        PlayerMagic playerMagic = player.GetComponent<PlayerMagic>();
 
-        if (spawnPoint != null && fireballPrefab != null)
+        if (!playerMagic.CanUse(magicCost))
         {
-            PlayerMovement playerMovement = spawnPoint.GetComponent<PlayerMovement>();
-            Vector2 direction = playerMovement.GetLastDirection();
-
-            Vector2 spawnPosition = (Vector2)spawnPoint.position + direction.normalized * 1f;
-
-            Instantiate(fireballPrefab, spawnPosition, spawnPoint.rotation);
+            Debug.Log("Not enough magic to use FireRod.");
+            return;
         }
-        else
+
+        Transform spawnPoint = player.transform;
+        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+        if (playerMovement == null)
         {
-            Debug.LogError("Fireball prefab or spawn point is not assigned.");
+            Debug.LogError("PlayerMovement component not found!");
+            return;
         }
+
+        Vector2 direction = playerMovement.GetLastDirection();
+        Vector2 spawnPosition = (Vector2)spawnPoint.position + direction.normalized * 1f;
+
+        Instantiate(fireballPrefab, spawnPosition, spawnPoint.rotation);
+        playerMagic.ConsumeMagic(magicCost);
     }
 }

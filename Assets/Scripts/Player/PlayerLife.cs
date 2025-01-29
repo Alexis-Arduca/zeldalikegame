@@ -67,6 +67,15 @@ public class PlayerLife : MonoBehaviour
         currentHeart = newHeart;
     }
 
+    public void HealFromCollectible(double heal)
+    {
+        if (currentHeart + heal < maxHeart) {
+            currentHeart += heal;
+        } else {
+            currentHeart = maxHeart;
+        }
+    }
+
     public double GetMaxHeart()
     {
         return maxHeart;

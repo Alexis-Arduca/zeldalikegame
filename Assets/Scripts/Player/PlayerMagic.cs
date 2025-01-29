@@ -14,12 +14,14 @@ public class PlayerMagic : MonoBehaviour
         maxMagic = 100;
         magicLevel = 1;
 
-        GameEventsManager.instance.magicEvents.onMagicCollected += RefillMagic; 
+        GameEventsManager.instance.magicEvents.onMagicCollected += RefillMagic;
+        GameEventsManager.instance.magicEvents.onMagicUsed += ConsumeMagic;
     }
 
     void OnDisable()
     {
-        GameEventsManager.instance.magicEvents.onMagicCollected -= RefillMagic; 
+        GameEventsManager.instance.magicEvents.onMagicCollected -= RefillMagic;
+        GameEventsManager.instance.magicEvents.onMagicUsed += ConsumeMagic;
     }
 
     public void RefillMagic(int value)

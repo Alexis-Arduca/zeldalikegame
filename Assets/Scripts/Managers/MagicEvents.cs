@@ -11,4 +11,13 @@ public class MagicEvents
             onMagicCollected(value);
         }
     }
+
+    public event Action<int> onMagicUsed;
+    public void OnMagicUsed(int value)
+    {
+        if (onMagicUsed != null)
+        {
+            onMagicUsed(value);
+        }
+    }
 }

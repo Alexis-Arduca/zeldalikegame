@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 [CreateAssetMenu(fileName = "NewLamp", menuName = "Inventory/Lamp")]
 public class Lamp : Item
@@ -10,6 +11,8 @@ public class Lamp : Item
     private Material lightMaterial;
     public LayerMask ignitableLayer;
     public GameObject mask;
+    private int magicCost = 1;
+    private Coroutine magicDrainRoutine;
 
     public Lamp() : base("Lamp", null)
     {
@@ -35,9 +38,16 @@ public class Lamp : Item
     private void ActivateLight()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
+        PlayerMagic playerMagic = player?.GetComponent<PlayerMagic>();
 
-        if (player != null && lightPrefab != null)
+        if (player != null && lightPrefab != null && playerMagic != null)
         {
+            if (!playerMagic.CanUse(magicCost))
+            {
+                Debug.Log("Not enough magic to activate the lamp.");
+                return;
+            }
+
             activeLight = Instantiate(lightPrefab, player.transform);
             activeLight.transform.localPosition = Vector3.zero;
 
@@ -47,6 +57,7 @@ public class Lamp : Item
             {
                 lightMaterial.SetFloat("_Radius", 0.2f);
                 Debug.Log("Lamp activated!");
+                magicDrainRoutine = player.GetComponent<MonoBehaviour>().StartCoroutine(DrainMagic(playerMagic));
             }
             else
             {
@@ -55,7 +66,7 @@ public class Lamp : Item
         }
         else
         {
-            Debug.LogError("Player or lightPrefab not found!");
+            Debug.LogError("Player, PlayerMagic component, or lightPrefab not found!");
         }
     }
 
@@ -71,6 +82,31 @@ public class Lamp : Item
             Destroy(activeLight);
             activeLight = null;
             Debug.Log("Lamp deactivated!");
+
+            if (magicDrainRoutine != null)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null)
+                {
+                    player.GetComponent<MonoBehaviour>().StopCoroutine(magicDrainRoutine);
+                }
+                magicDrainRoutine = null;
+            }
+        }
+    }
+
+    private IEnumerator DrainMagic(PlayerMagic playerMagic)
+    {
+        while (activeLight != null)
+        {
+            if (!playerMagic.CanUse(magicCost))
+            {
+                DeactivateLight();
+                yield break;
+            }
+            
+            playerMagic.ConsumeMagic(magicCost);
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -84,7 +120,6 @@ public class Lamp : Item
 
             foreach (var hitCollider in hitColliders)
             {
-                Debug.Log("Testing");
                 var ignitable = hitCollider.GetComponent<Ignitable>();
                 if (ignitable != null)
                 {
