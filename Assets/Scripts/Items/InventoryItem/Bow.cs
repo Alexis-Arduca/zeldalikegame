@@ -3,9 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewBow", menuName = "Inventory/Bow")]
 public class Bow : Item
 {
+    public GameObject player;
     public GameObject arrowPrefab;
-    public int nbArrow = 30;
-    public int maxArrow = 30;
 
     public Bow() : base("Bow", null)
     {
@@ -13,8 +12,9 @@ public class Bow : Item
 
     public override void Use()
     {
-        if (nbArrow > 0) {
-            nbArrow -= 1;
+        player = GameObject.FindGameObjectWithTag("Player");
+    
+        if (player.GetComponent<PlayerResources>().UseBow() == true) {
             Debug.Log("Shoot an Arrow with the bow!");
             ShootArrow();
         }
@@ -23,8 +23,6 @@ public class Bow : Item
 
     private void ShootArrow()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
         if (player != null)
         {
             GameObject arrow = Instantiate(arrowPrefab, player.transform.position, Quaternion.identity);
