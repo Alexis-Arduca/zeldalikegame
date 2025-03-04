@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private PlayerAttack playerAttack;
     private PlayerLife playerLife;
     private GameManager gameManager;
+    private List<Key> playerKeys = new List<Key>();
 
     void Start()
     {
@@ -111,5 +112,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ObtainNewKey(Key newKey)
+    {
+        playerKeys.Add(newKey);
     }
 }
