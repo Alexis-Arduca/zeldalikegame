@@ -6,6 +6,9 @@ public class DungeonGenerator : MonoBehaviour
 {
     [Tooltip("All prefabs template")]
     public List<GameObject> roomPrefabs;
+    public List<Item> dungeonItems;
+    public List<Enemy> dungeonEnemys;
+    public List<Enemy> dungeonBoss;
 
     public int roomCount = 10;
     public Vector2 roomSize = new Vector2(20f, 11f);
@@ -48,6 +51,19 @@ public class DungeonGenerator : MonoBehaviour
 
         CreateConnections();
 
+        int fightRoomMin = Mathf.FloorToInt(roomCount * 0.01f);
+        int fightRoomMax = Mathf.FloorToInt(roomCount * 0.30f);
+        int fightRoomCount = Random.Range(fightRoomMin, fightRoomMax + 1);
+
+        var shuffledPositions = new List<Vector2>(roomPositions);
+        ShuffleList(shuffledPositions);
+
+        Vector2 startRoom = roomPositions[0];
+        Vector2 bossRoom = shuffledPositions.First(pos => pos != startRoom);
+        List<Vector2> fightRooms = shuffledPositions
+            .Where(pos => pos != startRoom && pos != bossRoom)
+            .Take(fightRoomCount).ToList();
+
         foreach (Vector2 gridPos in roomPositions)
         {
             bool connectTop    = connections.Contains((gridPos, gridPos + Vector2.up));
@@ -64,18 +80,42 @@ public class DungeonGenerator : MonoBehaviour
                        tpl.doorRight == connectRight;
             }).ToList();
 
-            GameObject toInstantiate;
-            if (candidates.Count > 0)
-            {
-                toInstantiate = candidates[Random.Range(0, candidates.Count)];
-            }
-            else
-            {
-                toInstantiate = roomPrefabs[0];
-            }
+            GameObject toInstantiate = (candidates.Count > 0) ?
+                candidates[Random.Range(0, candidates.Count)] :
+                roomPrefabs[0];
 
             Vector2 worldPos = Vector2.Scale(gridPos, roomSize);
-            Instantiate(toInstantiate, worldPos, Quaternion.identity, transform);
+            GameObject roomObj = Instantiate(toInstantiate, worldPos, Quaternion.identity, transform);
+
+            var template = roomObj.GetComponent<RoomTemplate>();
+            var dungeonRoom = roomObj.GetComponent<DungeonRoom>();
+
+            if (gridPos == startRoom)
+            {
+                template.roomType = RoomTemplate.RoomType.Start;
+            }
+            else if (gridPos == bossRoom)
+            {
+                template.roomType = RoomTemplate.RoomType.Boss;
+                if (dungeonRoom != null && dungeonBoss.Count > 0)
+                {
+                    dungeonRoom.assignedBoss = dungeonBoss[Random.Range(0, dungeonBoss.Count)];
+                }
+            }
+            else if (fightRooms.Contains(gridPos))
+            {
+                template.roomType = RoomTemplate.RoomType.Fight;
+                if (dungeonRoom != null && dungeonEnemys.Count > 0)
+                {
+                    int enemyCount = Random.Range(2, 6);
+                    dungeonRoom.assignedEnemies = new List<Enemy>();
+                    for (int i = 0; i < enemyCount; i++)
+                    {
+                        var enemy = dungeonEnemys[Random.Range(0, dungeonEnemys.Count)];
+                        dungeonRoom.assignedEnemies.Add(enemy);
+                    }
+                }
+            }
         }
     }
 
@@ -83,7 +123,6 @@ public class DungeonGenerator : MonoBehaviour
     {
         var remaining = new HashSet<Vector2>(roomPositions);
         var connected = new HashSet<Vector2>();
-        var edges = new List<(Vector2 from, Vector2 to)>();
 
         Vector2 start = roomPositions[Random.Range(0, roomPositions.Count)];
         connected.Add(start);
@@ -133,5 +172,14 @@ public class DungeonGenerator : MonoBehaviour
             (copy[i], copy[rand]) = (copy[rand], copy[i]);
         }
         return copy;
+    }
+
+    void ShuffleList<T>(List<T> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int rand = Random.Range(i, list.Count);
+            (list[i], list[rand]) = (list[rand], list[i]);
+        }
     }
 }

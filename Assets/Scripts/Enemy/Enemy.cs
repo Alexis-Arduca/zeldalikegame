@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class Enemy : MonoBehaviour
 {
@@ -84,9 +85,11 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public event Action OnDeath;
     protected virtual void Die()
     {
         Debug.Log("Enemy died!");
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 
@@ -139,11 +142,11 @@ public class Enemy : MonoBehaviour
         Vector2 randomDirection;
         do
         {
-            randomDirection = directions[Random.Range(0, directions.Length)];
+            randomDirection = directions[UnityEngine.Random.Range(0, directions.Length)];
         } while (randomDirection == lastDirection);
 
         lastDirection = randomDirection;
-        patrolPoint = (Vector2)transform.position + randomDirection * Random.Range(1f, detectionRange / 2f);
+        patrolPoint = (Vector2)transform.position + randomDirection * UnityEngine.Random.Range(1f, detectionRange / 2f);
     }
 
     public void Freeze(float duration)

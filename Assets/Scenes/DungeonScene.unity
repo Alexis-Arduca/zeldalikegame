@@ -363,7 +363,16 @@ MonoBehaviour:
   - {fileID: 8689552207853531689, guid: 792dd3f2b81f0b64aae3d9bfa94e1d59, type: 3}
   - {fileID: 3646923411527834466, guid: 3e0d8bf1a7d053245aea47b6e9403047, type: 3}
   - {fileID: 7999510940485234246, guid: 5d9d728485e7fe049a7bfb795087bfcd, type: 3}
-  roomCount: 14
+  - {fileID: 874697379855555858, guid: be6e7acb0aa837244bcbf91a8a6a02ab, type: 3}
+  - {fileID: 3315977002796673000, guid: c3181cce6c35f8140b264a564dcdaa16, type: 3}
+  dungeonItems: []
+  dungeonEnemys:
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  dungeonBoss:
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  roomCount: 18
   roomSize: {x: 20, y: 11}
 --- !u!4 &218881456
 Transform:
@@ -6923,11 +6932,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7294197359714002822, guid: a109ca8922775584389af3f8c051bae0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -75.62001
+      value: -74.7
       objectReference: {fileID: 0}
     - target: {fileID: 7294197359714002822, guid: a109ca8922775584389af3f8c051bae0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.3856
+      value: -14.55
       objectReference: {fileID: 0}
     - target: {fileID: 7294197359714002822, guid: a109ca8922775584389af3f8c051bae0, type: 3}
       propertyPath: m_LocalPosition.z
