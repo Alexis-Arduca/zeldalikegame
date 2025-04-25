@@ -15,6 +15,7 @@ public class Rupee : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("Enter");
         if (other.CompareTag("Player"))
         {
             GameEventsManager.instance.rupeeEvents.OnRupeeCollected(Value);

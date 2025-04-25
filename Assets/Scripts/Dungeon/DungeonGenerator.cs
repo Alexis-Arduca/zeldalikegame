@@ -6,7 +6,7 @@ public class DungeonGenerator : MonoBehaviour
 {
     [Tooltip("All prefabs template")]
     public List<GameObject> roomPrefabs;
-    public List<Item> dungeonItems;
+    public List<GameObject> dungeonCollectibles;
     public List<Enemy> dungeonEnemys;
     public List<Enemy> dungeonBoss;
 
@@ -17,6 +17,9 @@ public class DungeonGenerator : MonoBehaviour
     private List<Vector2> roomPositions = new List<Vector2>();
     private HashSet<(Vector2, Vector2)> connections = new HashSet<(Vector2, Vector2)>();
 
+    private List<Vector2> doorKeyRooms = new List<Vector2>();
+    private List<Vector2> chestRooms = new List<Vector2>();
+
     void Start()
     {
         Random.InitState(System.DateTime.Now.Millisecond);
@@ -25,25 +28,21 @@ public class DungeonGenerator : MonoBehaviour
 
     void GenerateDungeon()
     {
-        Vector2 currentPos = Vector2.zero;
-        roomPositions.Add(currentPos);
-        occupiedPositions.Add(currentPos);
+        Vector2 startPos = Vector2.zero;
+        roomPositions.Add(startPos);
+        occupiedPositions.Add(startPos);
 
-        Vector2[] directions = new Vector2[] {
-            Vector2.up, Vector2.down, Vector2.left, Vector2.right
-        };
-
+        Vector2[] dirs = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
         while (roomPositions.Count < roomCount)
         {
-            Vector2 basePos = roomPositions[Random.Range(0, roomPositions.Count)];
-
-            foreach (Vector2 dir in Shuffle(directions))
+            var basePos = roomPositions[Random.Range(0, roomPositions.Count)];
+            foreach (var dir in Shuffle(dirs))
             {
-                Vector2 newPos = basePos + dir;
-                if (!occupiedPositions.Contains(newPos))
+                var np = basePos + dir;
+                if (!occupiedPositions.Contains(np))
                 {
-                    roomPositions.Add(newPos);
-                    occupiedPositions.Add(newPos);
+                    roomPositions.Add(np);
+                    occupiedPositions.Add(np);
                     break;
                 }
             }
@@ -51,71 +50,187 @@ public class DungeonGenerator : MonoBehaviour
 
         CreateConnections();
 
-        int fightRoomMin = Mathf.FloorToInt(roomCount * 0.01f);
-        int fightRoomMax = Mathf.FloorToInt(roomCount * 0.30f);
-        int fightRoomCount = Random.Range(fightRoomMin, fightRoomMax + 1);
-
-        var shuffledPositions = new List<Vector2>(roomPositions);
-        ShuffleList(shuffledPositions);
-
-        Vector2 startRoom = roomPositions[0];
-        Vector2 bossRoom = shuffledPositions.First(pos => pos != startRoom);
-        List<Vector2> fightRooms = shuffledPositions
-            .Where(pos => pos != startRoom && pos != bossRoom)
-            .Take(fightRoomCount).ToList();
-
-        foreach (Vector2 gridPos in roomPositions)
+        foreach (var gridPos in roomPositions)
         {
-            bool connectTop    = connections.Contains((gridPos, gridPos + Vector2.up));
-            bool connectBottom = connections.Contains((gridPos, gridPos + Vector2.down));
-            bool connectLeft   = connections.Contains((gridPos, gridPos + Vector2.left));
-            bool connectRight  = connections.Contains((gridPos, gridPos + Vector2.right));
+            bool top = connections.Contains((gridPos, gridPos + Vector2.up));
+            bool bot = connections.Contains((gridPos, gridPos + Vector2.down));
+            bool left = connections.Contains((gridPos, gridPos + Vector2.left));
+            bool right = connections.Contains((gridPos, gridPos + Vector2.right));
 
-            var candidates = roomPrefabs.Where(prefab =>
+            var candidates = roomPrefabs.Where(p =>
             {
-                var tpl = prefab.GetComponent<RoomTemplate>();
-                return tpl.doorTop == connectTop &&
-                       tpl.doorBottom == connectBottom &&
-                       tpl.doorLeft == connectLeft &&
-                       tpl.doorRight == connectRight;
+                var tpl = p.GetComponent<RoomTemplate>();
+                return tpl.doorTop == top &&
+                       tpl.doorBottom == bot &&
+                       tpl.doorLeft == left &&
+                       tpl.doorRight == right;
             }).ToList();
 
-            GameObject toInstantiate = (candidates.Count > 0) ?
-                candidates[Random.Range(0, candidates.Count)] :
-                roomPrefabs[0];
+            var prefab = candidates.Count > 0
+                ? candidates[Random.Range(0, candidates.Count)]
+                : roomPrefabs[0];
 
-            Vector2 worldPos = Vector2.Scale(gridPos, roomSize);
-            GameObject roomObj = Instantiate(toInstantiate, worldPos, Quaternion.identity, transform);
+            var worldPos = Vector2.Scale(gridPos, roomSize);
+            var instance = Instantiate(prefab, worldPos, Quaternion.identity, transform);
 
-            var template = roomObj.GetComponent<RoomTemplate>();
-            var dungeonRoom = roomObj.GetComponent<DungeonRoom>();
-
-            if (gridPos == startRoom)
+            var tplComp = instance.GetComponent<RoomTemplate>();
+            if (tplComp.hasDoorKey) doorKeyRooms.Add(gridPos);
+            if (tplComp.hasChest)
             {
-                template.roomType = RoomTemplate.RoomType.Start;
-            }
-            else if (gridPos == bossRoom)
-            {
-                template.roomType = RoomTemplate.RoomType.Boss;
-                if (dungeonRoom != null && dungeonBoss.Count > 0)
+                chestRooms.Add(gridPos);
+                var chests = instance.GetComponentsInChildren<Chest>();
+                if (chests.Length == 0)
                 {
-                    dungeonRoom.assignedBoss = dungeonBoss[Random.Range(0, dungeonBoss.Count)];
+                    Debug.LogWarning($"Room at {gridPos} marked as hasChest but contains no Chest components");
+                }
+                else
+                {
+                    Debug.Log($"Room at {gridPos} has {chests.Length} chest(s): {string.Join(", ", chests.Select(c => c.GetType().Name))}");
                 }
             }
-            else if (fightRooms.Contains(gridPos))
+        }
+
+        // Check collectibles availables
+        if (dungeonCollectibles.Count == 0)
+        {
+            Debug.LogWarning("No collectibles assigned to dungeonCollectibles list");
+        }
+        else
+        {
+            Debug.Log($"Available collectibles: {dungeonCollectibles.Count}");
+        }
+
+        // Prepare collectibles (key)
+        var keyCollectibles = dungeonCollectibles;
+        if (keyCollectibles.Count < doorKeyRooms.Count)
+        {
+            Debug.LogWarning($"Not enough key collectibles ({keyCollectibles.Count}) for {doorKeyRooms.Count} door key rooms");
+        }
+
+        // BFS 
+        var queue = new Queue<Vector2>();
+        var seen = new HashSet<Vector2> { startPos };
+        queue.Enqueue(startPos);
+
+        var reachableOrder = new List<Vector2>();
+        while (queue.Count > 0)
+        {
+            var cur = queue.Dequeue();
+            reachableOrder.Add(cur);
+            foreach (var dir in dirs)
             {
-                template.roomType = RoomTemplate.RoomType.Fight;
-                if (dungeonRoom != null && dungeonEnemys.Count > 0)
+                var nb = cur + dir;
+                if (roomPositions.Contains(nb) && !seen.Contains(nb))
                 {
-                    int enemyCount = Random.Range(2, 6);
-                    dungeonRoom.assignedEnemies = new List<Enemy>();
-                    for (int i = 0; i < enemyCount; i++)
-                    {
-                        var enemy = dungeonEnemys[Random.Range(0, dungeonEnemys.Count)];
-                        dungeonRoom.assignedEnemies.Add(enemy);
-                    }
+                    seen.Add(nb);
+                    queue.Enqueue(nb);
                 }
             }
+        }
+
+        // 1) Place key if door key
+        var filledChests = new HashSet<Vector2>();
+        int keyIndex = 0;
+        foreach (var doorPos in doorKeyRooms)
+        {
+            Vector2? chestForThis = null;
+            foreach (var room in reachableOrder)
+            {
+                if (room == doorPos) break;
+                if (chestRooms.Contains(room) && !filledChests.Contains(room))
+                {
+                    chestForThis = room;
+                    break;
+                }
+            }
+
+            if (chestForThis.HasValue && keyIndex < keyCollectibles.Count)
+            {
+                FillChestAt(chestForThis.Value, keyCollectibles[keyIndex]);
+                filledChests.Add(chestForThis.Value);
+                keyIndex++;
+            }
+            else
+            {
+                Debug.LogWarning($"Could not place key for door at {doorPos}: " +
+                    (chestForThis.HasValue ? "No more key collectibles" : "No available chest"));
+            }
+        }
+
+        // 2) Filling other chests
+        Debug.Log($"=====================[ Filling {chestRooms.Count} chests ]");
+        foreach (var chestPos in chestRooms)
+        {
+            if (filledChests.Contains(chestPos))
+                continue;
+
+            if (dungeonCollectibles.Count > 0)
+            {
+                var payload = dungeonCollectibles[Random.Range(0, dungeonCollectibles.Count)];
+                FillChestAt(chestPos, payload);
+                filledChests.Add(chestPos);
+            }
+            else
+            {
+                Debug.LogWarning($"No collectibles available to fill chest at {chestPos}");
+            }
+        }
+    }
+
+    void FillChestAt(Vector2 chestGridPos, GameObject collectiblePrefab = null, Item item = null)
+    {
+        // Find the room corresponding to the position
+        var roomObj = transform.Cast<Transform>()
+            .Select(t => t.gameObject)
+            .FirstOrDefault(go =>
+                Vector2.Scale(go.transform.position, Vector2.one / roomSize) == chestGridPos
+            );
+
+        if (roomObj == null)
+        {
+            Debug.LogWarning($"No room found at grid position {chestGridPos}");
+            return;
+        }
+
+        // Looking at all chests in a room
+        var chests = roomObj.GetComponentsInChildren<Chest>();
+        if (chests.Length == 0)
+        {
+            Debug.LogWarning($"No chests found in room at grid position {chestGridPos}");
+            return;
+        }
+
+        // One per one chest
+        Chest targetChest = null;
+        if (collectiblePrefab != null)
+        {
+            targetChest = chests.OfType<ChestCollectibles>().FirstOrDefault();
+            if (targetChest != null)
+            {
+                targetChest.FillChest(collectiblePrefab);
+                Debug.Log($"Filled chest at {chestGridPos} with collectible {collectiblePrefab.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"No ChestCollectibles found in room at {chestGridPos} for collectible {collectiblePrefab.name}. Available chest types: {string.Join(", ", chests.Select(c => c.GetType().Name))}");
+            }
+        }
+        else if (item != null)
+        {
+            targetChest = chests.OfType<ChestItem>().FirstOrDefault();
+            if (targetChest != null)
+            {
+                targetChest.FillChest(item);
+                Debug.Log($"Filled chest at {chestGridPos} with item {item.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"No ChestItem found in room at {chestGridPos} for item {item.name}. Available chest types: {string.Join(", ", chests.Select(c => c.GetType().Name))}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No collectible or item provided for chest at {chestGridPos}");
         }
     }
 
@@ -123,24 +238,25 @@ public class DungeonGenerator : MonoBehaviour
     {
         var remaining = new HashSet<Vector2>(roomPositions);
         var connected = new HashSet<Vector2>();
+        var dirs = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
-        Vector2 start = roomPositions[Random.Range(0, roomPositions.Count)];
+        var start = roomPositions[0];
         connected.Add(start);
         remaining.Remove(start);
 
         while (remaining.Count > 0)
         {
-            foreach (var current in connected.ToList())
+            foreach (var cur in connected.ToList())
             {
-                foreach (var dir in new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right })
+                foreach (var dir in dirs)
                 {
-                    Vector2 neighbor = current + dir;
-                    if (remaining.Contains(neighbor))
+                    var nb = cur + dir;
+                    if (remaining.Contains(nb))
                     {
-                        connections.Add((current, neighbor));
-                        connections.Add((neighbor, current));
-                        connected.Add(neighbor);
-                        remaining.Remove(neighbor);
+                        connections.Add((cur, nb));
+                        connections.Add((nb, cur));
+                        connected.Add(nb);
+                        remaining.Remove(nb);
                         break;
                     }
                 }
@@ -149,37 +265,28 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (var pos in roomPositions)
         {
-            foreach (var dir in new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right })
+            foreach (var dir in dirs)
             {
-                Vector2 neighbor = pos + dir;
-                if (roomPositions.Contains(neighbor) &&
-                    !connections.Contains((pos, neighbor)) &&
+                var nb = pos + dir;
+                if (roomPositions.Contains(nb) &&
+                    !connections.Contains((pos, nb)) &&
                     Random.value < 0.2f)
                 {
-                    connections.Add((pos, neighbor));
-                    connections.Add((neighbor, pos));
+                    connections.Add((pos, nb));
+                    connections.Add((nb, pos));
                 }
             }
         }
     }
 
-    Vector2[] Shuffle(Vector2[] array)
+    Vector2[] Shuffle(Vector2[] arr)
     {
-        Vector2[] copy = (Vector2[])array.Clone();
+        var copy = (Vector2[])arr.Clone();
         for (int i = 0; i < copy.Length; i++)
         {
-            int rand = Random.Range(i, copy.Length);
-            (copy[i], copy[rand]) = (copy[rand], copy[i]);
+            int j = Random.Range(i, copy.Length);
+            (copy[i], copy[j]) = (copy[j], copy[i]);
         }
         return copy;
-    }
-
-    void ShuffleList<T>(List<T> list)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            int rand = Random.Range(i, list.Count);
-            (list[i], list[rand]) = (list[rand], list[i]);
-        }
     }
 }

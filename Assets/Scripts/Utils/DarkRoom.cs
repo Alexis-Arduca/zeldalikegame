@@ -8,6 +8,7 @@ public class DarkRoom : MonoBehaviour
 
     void Start()
     {
+        darkImage = GameObject.Find("DarknessMask");
         darkImage.SetActive(false);
     }
 

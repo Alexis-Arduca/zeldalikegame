@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &302922929618528527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2653783577794934064}
+  - component: {fileID: 3187585954000679888}
+  m_Layer: 0
+  m_Name: DungeonGenerator1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2653783577794934064
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302922929618528527}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -25.772182, y: -2.8619208, z: 0.9086781}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3187585954000679888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302922929618528527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5278f2c4f4466524bbed2e0e50dd65f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomPrefabs:
+  - {fileID: 5485137059598452899, guid: d4ac3ae7850956e4f8a645a528227d90, type: 3}
+  - {fileID: 2627277779276401008, guid: 0944177a385e16544baa32a62cafd4e8, type: 3}
+  - {fileID: 1983574240850634421, guid: 703d702ddee0d8648ac939789d962022, type: 3}
+  - {fileID: 2602762681625451158, guid: 862fee6725d1f2f4cb896cbdc36633fc, type: 3}
+  - {fileID: 5706326507343020906, guid: 8870b218ea8218847b1e7451cde05e8a, type: 3}
+  - {fileID: 2785122275982819229, guid: 0bdd261631bdfae438ec82cdb0827ce8, type: 3}
+  - {fileID: 749897745272557060, guid: 85727079c86ac2a4996f37fd42c0f89a, type: 3}
+  - {fileID: 7894559723399065038, guid: 4003a9fa0b89dda46a93ac16ed37670f, type: 3}
+  - {fileID: 9175195955389106149, guid: 8bea140a19c65f64ebfa36d8f4f22787, type: 3}
+  - {fileID: 5396814279412242198, guid: 247fdd182d160cb4eae5ad99c0eefef2, type: 3}
+  - {fileID: 405014199567391355, guid: feea072c87a4f2041807f2d100f071fe, type: 3}
+  - {fileID: 6518097963685531371, guid: 1b5727bd6251f1b4e837080d3dc39ef1, type: 3}
+  - {fileID: 8689552207853531689, guid: 792dd3f2b81f0b64aae3d9bfa94e1d59, type: 3}
+  - {fileID: 3646923411527834466, guid: 3e0d8bf1a7d053245aea47b6e9403047, type: 3}
+  - {fileID: 7999510940485234246, guid: 5d9d728485e7fe049a7bfb795087bfcd, type: 3}
+  - {fileID: 874697379855555858, guid: be6e7acb0aa837244bcbf91a8a6a02ab, type: 3}
+  - {fileID: 3315977002796673000, guid: c3181cce6c35f8140b264a564dcdaa16, type: 3}
+  - {fileID: 2870122540670868692, guid: ad7c4f928816d6041bd3cf6e1d8a9f70, type: 3}
+  - {fileID: 6364938375029160077, guid: 6a03ca3cbba82c24893bf5d467c38d4d, type: 3}
+  dungeonItems: []
+  dungeonEnemys:
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  dungeonBoss:
+  - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+  roomCount: 18
+  roomSize: {x: 20, y: 11}

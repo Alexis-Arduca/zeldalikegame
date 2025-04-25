@@ -8,6 +8,8 @@ public class DungeonRoom : MonoBehaviour
     private float fixedOrthographicSize;
     private RoomTemplate roomTemplate;
     private List<GameObject> doors;
+    public List<Item> chestContents = new List<Item>();
+
 
     public Enemy assignedBoss;
     public List<Enemy> assignedEnemies;

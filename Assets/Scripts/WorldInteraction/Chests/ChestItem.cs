@@ -1,50 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ChestItem : MonoBehaviour
+public class ChestItem : Chest
 {
-    public Sprite openChest;
-    public Sprite closeChest;
-    public Item itemInChest;
-    private bool isOpen;
-    private SpriteRenderer spriteRenderer;
-
-    void Start()
+    public override void FillChest(Item item)
     {
-        isOpen = false;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = closeChest;
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.O))
+        if (item == null)
         {
-            if (!isOpen)
-            {
-                OpenChest(other.GetComponent<PlayerController>());
-            }
+            Debug.LogWarning($"Attempted to fill chest {name} with null item");
+            return;
         }
-    }
 
-    void OpenChest(PlayerController player)
-    {
-        isOpen = true;
-        spriteRenderer.sprite = openChest;
-
-        if (itemInChest != null)
+        if (item.itemSprite == null)
         {
-            player.ObtainItem(itemInChest);
-            Debug.Log($"{itemInChest.itemName} obtenu !");
-
-            GameObject itemDisplay = new GameObject("ItemDisplay");
-            itemDisplay.transform.position = transform.position + new Vector3(0, 0.5f, 0);
-
-            SpriteRenderer itemSpriteRenderer = itemDisplay.AddComponent<SpriteRenderer>();
-            itemSpriteRenderer.sprite = itemInChest.itemSprite;
-
-            itemDisplay.AddComponent<ChestAnimation>().StartFloating();
+            Debug.LogWarning($"Item {item.name} for chest {name} has no sprite");
+            return;
         }
+
+        itemInChest = item;
+        Debug.Log($"Chest {name} filled with item {item.name}");
     }
 }
