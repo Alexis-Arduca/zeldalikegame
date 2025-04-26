@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 302922929618528527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25.772182, y: -2.8619208, z: 0.9086781}
+  m_LocalPosition: {x: -29.4, y: 9.3, z: 0.9086781}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -64,12 +64,30 @@ MonoBehaviour:
   - {fileID: 3315977002796673000, guid: c3181cce6c35f8140b264a564dcdaa16, type: 3}
   - {fileID: 2870122540670868692, guid: ad7c4f928816d6041bd3cf6e1d8a9f70, type: 3}
   - {fileID: 6364938375029160077, guid: 6a03ca3cbba82c24893bf5d467c38d4d, type: 3}
-  dungeonItems: []
+  - {fileID: 8234199170214329041, guid: fcec862272229cc4ba4a34cdfc4d694d, type: 3}
+  - {fileID: 3027648852850607233, guid: b5e5633c9c5dcb74388df19fe71eeff6, type: 3}
+  - {fileID: 2132691271944252260, guid: 06aa3443cfec05d4fa6038f8688eab61, type: 3}
+  - {fileID: 1923408197890868293, guid: 110e8c53382e6934faeb80176ad60033, type: 3}
+  - {fileID: 2132691271944252260, guid: 06aa3443cfec05d4fa6038f8688eab61, type: 3}
+  - {fileID: 8647872002876848940, guid: 9da0d1aabce17bc4d911d128b5dd675d, type: 3}
+  - {fileID: 3259777142954554034, guid: 82283be8a1a0cc34fb50d8e658ea4545, type: 3}
+  - {fileID: 4306941325612682088, guid: 9827ba56d3f4b494e8201b7175197f29, type: 3}
+  dungeonCollectibles:
+  - {fileID: 8638881699662247338, guid: 7621c44b4f887f24bbd86f4ac65dac63, type: 3}
+  - {fileID: 8248866613938767982, guid: be437897e27e03a4e9cb3120a370046c, type: 3}
+  - {fileID: 3275059907211263688, guid: b9651dba726793341a42fada5278bdc0, type: 3}
+  - {fileID: 4713976679730127335, guid: b5a32cfb37c6a304390950875b605c68, type: 3}
+  - {fileID: 4403770243727644405, guid: 48b80a75e9fc14c4d90f40906ad0d8d1, type: 3}
+  - {fileID: 247433181944075977, guid: 028b1863aca03444aa42447cad2172cb, type: 3}
+  - {fileID: 6605941607086017331, guid: 2648aa1db9dbf5145b5151945200cbb3, type: 3}
+  - {fileID: 6567154651699502835, guid: 3a71c2f9efdfe634ba61d668f34e15ee, type: 3}
+  - {fileID: 4811454550338489934, guid: b30e6a990a70ee140abdfacaeb2bf05e, type: 3}
+  dungeonKey: {fileID: 6567154651699502835, guid: 3a71c2f9efdfe634ba61d668f34e15ee, type: 3}
+  dungeonBossKey: {fileID: 4811454550338489934, guid: b30e6a990a70ee140abdfacaeb2bf05e, type: 3}
   dungeonEnemys:
   - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
   - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
   - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
   dungeonBoss:
   - {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
-  roomCount: 18
-  roomSize: {x: 20, y: 11}
+  roomCount: 19

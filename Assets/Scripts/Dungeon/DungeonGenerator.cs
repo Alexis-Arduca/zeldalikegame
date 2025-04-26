@@ -7,11 +7,13 @@ public class DungeonGenerator : MonoBehaviour
     [Tooltip("All prefabs template")]
     public List<GameObject> roomPrefabs;
     public List<GameObject> dungeonCollectibles;
+    public GameObject dungeonKey;
+    public GameObject dungeonBossKey;
     public List<Enemy> dungeonEnemys;
     public List<Enemy> dungeonBoss;
 
     public int roomCount = 10;
-    public Vector2 roomSize = new Vector2(20f, 11f);
+    private Vector2 roomSize = new Vector2(20f, 11f);
 
     private HashSet<Vector2> occupiedPositions = new HashSet<Vector2>();
     private List<Vector2> roomPositions = new List<Vector2>();
@@ -26,19 +28,54 @@ public class DungeonGenerator : MonoBehaviour
         GenerateDungeon();
     }
 
+    /// <summary>
+    /// Procedural Dugeon Generation function
+    /// </summary>
     void GenerateDungeon()
     {
         Vector2 startPos = Vector2.zero;
+
+        // Select a random room with a 'Start' RoomType
+        var startRooms = roomPrefabs.Where(p => p.GetComponent<RoomTemplate>().roomType == RoomTemplate.RoomType.Start).ToList();
+        var startRoomPrefab = startRooms[Random.Range(0, startRooms.Count)];
+        var startRoomTemplate = startRoomPrefab.GetComponent<RoomTemplate>();
+        if (startRoomTemplate.doorBottom)
+        {
+            Debug.LogError("Selected Start room cannot have doorBottom");
+            return;
+        }
+
+        // Place 'Start' room (the only one)
         roomPositions.Add(startPos);
         occupiedPositions.Add(startPos);
+        var startInstance = Instantiate(startRoomPrefab, Vector2.Scale(startPos, roomSize), Quaternion.identity, transform);
 
-        Vector2[] dirs = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+        // Save start room property
+        if (startRoomTemplate.hasDoorKey) doorKeyRooms.Add(startPos);
+        if (startRoomTemplate.hasChest)
+        {
+            chestRooms.Add(startPos);
+            var chests = startInstance.GetComponentsInChildren<Chest>();
+            if (chests.Length == 0)
+            {
+                Debug.LogWarning($"Start room at {startPos} marked as hasChest but contains no Chest components");
+            }
+            else
+            {
+                Debug.Log($"Start room at {startPos} has {chests.Length} chest(s): {string.Join(", ", chests.Select(c => c.GetType().Name))}");
+            }
+        }
+
+        // Generate other room
+        Vector2[] dirs = { Vector2.up, Vector2.left, Vector2.right };
         while (roomPositions.Count < roomCount)
         {
             var basePos = roomPositions[Random.Range(0, roomPositions.Count)];
             foreach (var dir in Shuffle(dirs))
             {
                 var np = basePos + dir;
+                if (np == startPos + Vector2.down)
+                    continue;
                 if (!occupiedPositions.Contains(np))
                 {
                     roomPositions.Add(np);
@@ -50,8 +87,11 @@ public class DungeonGenerator : MonoBehaviour
 
         CreateConnections();
 
+        // Instantiate other room
         foreach (var gridPos in roomPositions)
         {
+            if (gridPos == startPos) continue;
+
             bool top = connections.Contains((gridPos, gridPos + Vector2.up));
             bool bot = connections.Contains((gridPos, gridPos + Vector2.down));
             bool left = connections.Contains((gridPos, gridPos + Vector2.left));
@@ -60,7 +100,8 @@ public class DungeonGenerator : MonoBehaviour
             var candidates = roomPrefabs.Where(p =>
             {
                 var tpl = p.GetComponent<RoomTemplate>();
-                return tpl.doorTop == top &&
+                return tpl.roomType != RoomTemplate.RoomType.Start &&
+                       tpl.doorTop == top &&
                        tpl.doorBottom == bot &&
                        tpl.doorLeft == left &&
                        tpl.doorRight == right;
@@ -68,7 +109,7 @@ public class DungeonGenerator : MonoBehaviour
 
             var prefab = candidates.Count > 0
                 ? candidates[Random.Range(0, candidates.Count)]
-                : roomPrefabs[0];
+                : roomPrefabs.First(p => p.GetComponent<RoomTemplate>().roomType != RoomTemplate.RoomType.Start);
 
             var worldPos = Vector2.Scale(gridPos, roomSize);
             var instance = Instantiate(prefab, worldPos, Quaternion.identity, transform);
@@ -90,24 +131,14 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
 
-        // Check collectibles availables
-        if (dungeonCollectibles.Count == 0)
+        // Be sure if there is at least the same amount of chest and the same amount of door key
+        if (chestRooms.Count < doorKeyRooms.Count + 1)
         {
-            Debug.LogWarning("No collectibles assigned to dungeonCollectibles list");
-        }
-        else
-        {
-            Debug.Log($"Available collectibles: {dungeonCollectibles.Count}");
+            Debug.LogError($"Not enough chests ({chestRooms.Count}) for {doorKeyRooms.Count} door keys and 1 boss key");
+            return;
         }
 
-        // Prepare collectibles (key)
-        var keyCollectibles = dungeonCollectibles;
-        if (keyCollectibles.Count < doorKeyRooms.Count)
-        {
-            Debug.LogWarning($"Not enough key collectibles ({keyCollectibles.Count}) for {doorKeyRooms.Count} door key rooms");
-        }
-
-        // BFS 
+        // BFS (Breadth-First Search)
         var queue = new Queue<Vector2>();
         var seen = new HashSet<Vector2> { startPos };
         queue.Enqueue(startPos);
@@ -128,9 +159,8 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
 
-        // 1) Place key if door key
+        // 1) Fill basic key for each door key present in the dungeon
         var filledChests = new HashSet<Vector2>();
-        int keyIndex = 0;
         foreach (var doorPos in doorKeyRooms)
         {
             Vector2? chestForThis = null;
@@ -144,21 +174,41 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
 
-            if (chestForThis.HasValue && keyIndex < keyCollectibles.Count)
+            if (chestForThis.HasValue)
             {
-                FillChestAt(chestForThis.Value, keyCollectibles[keyIndex]);
+                FillChestAt(chestForThis.Value, dungeonKey);
                 filledChests.Add(chestForThis.Value);
-                keyIndex++;
+                Debug.Log($"Placed door key in chest at {chestForThis.Value} for door at {doorPos}");
             }
             else
             {
-                Debug.LogWarning($"Could not place key for door at {doorPos}: " +
-                    (chestForThis.HasValue ? "No more key collectibles" : "No available chest"));
+                Debug.LogWarning($"No available chest to place key for door at {doorPos}");
             }
         }
 
-        // 2) Filling other chests
-        Debug.Log($"=====================[ Filling {chestRooms.Count} chests ]");
+        // 2) Fill a chest with a unique boss key (one per dungeon)
+        Vector2? bossKeyChest = null;
+        foreach (var room in reachableOrder)
+        {
+            if (chestRooms.Contains(room) && !filledChests.Contains(room))
+            {
+                bossKeyChest = room;
+                break;
+            }
+        }
+
+        if (bossKeyChest.HasValue)
+        {
+            FillChestAt(bossKeyChest.Value, dungeonBossKey);
+            filledChests.Add(bossKeyChest.Value);
+            Debug.Log($"Placed boss key in chest at {bossKeyChest.Value}");
+        }
+        else
+        {
+            Debug.LogWarning("No available chest to place boss key");
+        }
+
+        // 3) Fill Chest with collectibles
         foreach (var chestPos in chestRooms)
         {
             if (filledChests.Contains(chestPos))
@@ -177,9 +227,14 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Fill all chest based on some parameters
+    /// </summary>
+    /// <param name="chestGridPos"></param>
+    /// <param name="collectiblePrefab"></param>
+    /// <param name="item"></param>
     void FillChestAt(Vector2 chestGridPos, GameObject collectiblePrefab = null, Item item = null)
     {
-        // Find the room corresponding to the position
         var roomObj = transform.Cast<Transform>()
             .Select(t => t.gameObject)
             .FirstOrDefault(go =>
@@ -192,7 +247,6 @@ public class DungeonGenerator : MonoBehaviour
             return;
         }
 
-        // Looking at all chests in a room
         var chests = roomObj.GetComponentsInChildren<Chest>();
         if (chests.Length == 0)
         {
@@ -200,7 +254,6 @@ public class DungeonGenerator : MonoBehaviour
             return;
         }
 
-        // One per one chest
         Chest targetChest = null;
         if (collectiblePrefab != null)
         {
@@ -234,13 +287,16 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Create connections with each rooms
+    /// </summary>
     void CreateConnections()
     {
         var remaining = new HashSet<Vector2>(roomPositions);
         var connected = new HashSet<Vector2>();
-        var dirs = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-
+        var dirs = new Vector2[] { Vector2.up, Vector2.left, Vector2.right };
         var start = roomPositions[0];
+
         connected.Add(start);
         remaining.Remove(start);
 
@@ -265,9 +321,11 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (var pos in roomPositions)
         {
-            foreach (var dir in dirs)
+            foreach (var dir in new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right })
             {
                 var nb = pos + dir;
+                if (pos == Vector2.zero && dir == Vector2.down)
+                    continue;
                 if (roomPositions.Contains(nb) &&
                     !connections.Contains((pos, nb)) &&
                     Random.value < 0.2f)
