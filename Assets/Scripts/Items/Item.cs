@@ -3,9 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]
 public class Item : ScriptableObject
 {
-    public bool isKey;
-    public bool isBossKey;
-
     public string itemName;
     public bool isEquipped;
     public int slotIndex;
@@ -21,15 +18,5 @@ public class Item : ScriptableObject
     public virtual void Use()
     {
         Debug.Log($"{itemName} use !");
-    }
-
-    public virtual bool IsKey()
-    {
-        return isKey;
-    }
-
-    public virtual bool IsBossKey()
-    {
-        return isBossKey;
     }
 }

@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public Sprite bowSprite;
-    public Sprite longshotSprite;
-    public GameObject arrowPrefab;
-    public GameObject longshotPrefab;
+    public FireRod rod;
+    public IceRod rod2;
+    public Ocarina ocarina;
+    public Lamp lamp;
+
     public static GameManager instance;
     public Inventory inventory;
 
@@ -26,8 +27,10 @@ public class GameManager : MonoBehaviour
     {
         inventory = new Inventory();
 
-        // inventory.AddItem(new Bow(bowSprite, arrowPrefab));
-        // inventory.AddItem(new Longshot(longshotSprite, longshotPrefab));
+        inventory.AddItem(rod);
+        inventory.AddItem(rod2);
+        inventory.AddItem(ocarina);
+        inventory.AddItem(lamp);
     }
 
     public Inventory GetInventory()
