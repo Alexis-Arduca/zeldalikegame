@@ -982,7 +982,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &378963704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4857,6 +4857,18 @@ PrefabInstance:
       propertyPath: roomCount
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 3187585954000679888, guid: 52f04f5d2744e1e4aaaa5022bbe19fb2, type: 3}
+      propertyPath: dungeonBoss.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3187585954000679888, guid: 52f04f5d2744e1e4aaaa5022bbe19fb2, type: 3}
+      propertyPath: dungeonBoss.Array.data[1]
+      value: 
+      objectReference: {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
+    - target: {fileID: 3187585954000679888, guid: 52f04f5d2744e1e4aaaa5022bbe19fb2, type: 3}
+      propertyPath: dungeonBoss.Array.data[2]
+      value: 
+      objectReference: {fileID: 1944898629910863133, guid: 63150ed9f602e784c953d5d971b47878, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
