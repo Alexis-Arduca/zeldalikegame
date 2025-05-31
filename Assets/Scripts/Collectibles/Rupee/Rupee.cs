@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rupee : MonoBehaviour
+public class Rupee : Collectibles
 {
     public int Value;
     public string RupeeName;
@@ -13,7 +13,7 @@ public class Rupee : MonoBehaviour
         RupeeName = rupeeName;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected override void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Enter");
         if (other.CompareTag("Player"))
@@ -21,5 +21,10 @@ public class Rupee : MonoBehaviour
             GameEventsManager.instance.rupeeEvents.OnRupeeCollected(Value);
             Destroy(gameObject);
         }
+    }
+
+    public override void OnBuy()
+    {
+        GameEventsManager.instance.rupeeEvents.OnRupeeCollected(Value);
     }
 }

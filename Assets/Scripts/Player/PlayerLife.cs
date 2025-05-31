@@ -21,12 +21,19 @@ public class PlayerLife : MonoBehaviour
     {
         maxPossibleHeart = 16;
         maxHeart = 3;
-        currentHeart = 3;
+        currentHeart = 2;
         heartFragment = 0;
         defense = 0;
-    
+
         gameManager = FindObjectOfType<GameManager>();
         inventory = gameManager.GetInventory();
+
+        GameEventsManager.instance.collectibleEvents.onRecoveryHeartCollected += HealFromCollectible;
+    }
+
+    private void OnDisable()
+    {
+        GameEventsManager.instance.collectibleEvents.onRecoveryHeartCollected -= HealFromCollectible;
     }
 
     // Update is called once per frame

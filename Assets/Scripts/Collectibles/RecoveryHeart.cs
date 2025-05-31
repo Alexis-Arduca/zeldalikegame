@@ -2,16 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RecoveryHeart : MonoBehaviour
+public class RecoveryHeart : Collectibles
 {
-    public PlayerLife playerLife;
+    public double nbHeart;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected override void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            playerLife.HealFromCollectible(1);
+            GameEventsManager.instance.collectibleEvents.OnRecoveryHeartCollected(nbHeart);
             Destroy(gameObject);
         }
+    }
+
+    public override void OnBuy()
+    {
+        GameEventsManager.instance.collectibleEvents.OnRecoveryHeartCollected(nbHeart);
     }
 }

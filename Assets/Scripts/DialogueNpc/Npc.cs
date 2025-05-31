@@ -3,28 +3,25 @@ using UnityEngine;
 public class NPC : MonoBehaviour
 {
     public Dialogue dialogueData;
+    protected bool isPlayerInRange = false;
 
-    private bool isPlayerInRange = false;
-
-    private void Update()
+    protected virtual void Update()
     {
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.O))
         {
-            Debug.Log("Press");
-            DialogueManager.Instance.StartDialogue(dialogueData);
+            DialogueManager.Instance.StartDialogue(dialogueData, 0);
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Enter");
             isPlayerInRange = true;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    protected void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {

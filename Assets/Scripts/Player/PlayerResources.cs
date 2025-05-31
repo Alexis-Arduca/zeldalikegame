@@ -22,11 +22,21 @@ public class PlayerResources : MonoBehaviour
 
         quiverLevel = 1;
         bombBagLevel = 1;
+
+        GameEventsManager.instance.collectibleEvents.onArrowCollected += RefillArrow;
+        GameEventsManager.instance.collectibleEvents.onBombCollected += RefillBomb;
+    }
+
+    private void OnDisable()
+    {
+        GameEventsManager.instance.collectibleEvents.onArrowCollected -= RefillArrow;
+        GameEventsManager.instance.collectibleEvents.onBombCollected -= RefillBomb;
     }
 
     public bool UseBow()
     {
-        if (currentArrow > 0) {
+        if (currentArrow > 0)
+        {
             currentArrow -= 1;
             return true;
         }

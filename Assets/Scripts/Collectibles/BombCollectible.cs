@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BombCollectible : MonoBehaviour
+public class BombCollectible : Collectibles
 {
-    public PlayerResources playerResources;
     public int nbBomb;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected override void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            playerResources.RefillBomb(nbBomb);
+            GameEventsManager.instance.collectibleEvents.OnBombCollected(nbBomb);
             Destroy(gameObject);
         }
+    }
+
+    public override void OnBuy()
+    {
+        GameEventsManager.instance.collectibleEvents.OnBombCollected(nbBomb);
     }
 }

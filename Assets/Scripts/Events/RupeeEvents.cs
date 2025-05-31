@@ -11,4 +11,13 @@ public class RupeeEvents
             onRupeeCollected(value);
         }
     }
+
+    public event Action<int> onRupeeUsed;
+    public void OnRupeeUsed(int value)
+    {
+        if (onRupeeUsed != null)
+        {
+            onRupeeUsed(value);
+        }
+    }
 }

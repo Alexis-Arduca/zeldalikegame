@@ -29,8 +29,10 @@ public class DialogueManager : MonoBehaviour
         choicesPanel.SetActive(false);
     }
 
-    public void StartDialogue(Dialogue dialogue)
+    public void StartDialogue(Dialogue dialogue, int startIndex = 0)
     {
+        GameEventsManager.instance.playerEvents.OnActionChange();
+
         dialoguePanel.SetActive(true);
         nameText.text = dialogue.npcName;
         lines = dialogue.dialogueLines;
@@ -38,9 +40,10 @@ public class DialogueManager : MonoBehaviour
         typingSpeed = dialogue.typingSpeed;
         autoDelay = dialogue.autoProgressDelay;
         choices = dialogue.choices;
-        index = 0;
+        index = startIndex;
         StartCoroutine(TypeLine());
     }
+
 
     private IEnumerator TypeLine()
     {
@@ -101,6 +104,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
+            GameEventsManager.instance.playerEvents.OnActionChange();
             dialoguePanel.SetActive(false);
         }
     }

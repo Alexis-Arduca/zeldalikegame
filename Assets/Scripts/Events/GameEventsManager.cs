@@ -10,6 +10,8 @@ public class GameEventsManager : MonoBehaviour
     public RupeeEvents rupeeEvents;
     public MagicEvents magicEvents;
     public MiscEvents miscEvents;
+    public PlayerEvents playerEvents;
+    public CollectibleEvents collectibleEvents;
 
     private void Awake()
     {
@@ -19,12 +21,13 @@ public class GameEventsManager : MonoBehaviour
         }
         instance = this;
 
-//         // initialize all events
-//         inputEvents = new InputEvents();
-//         playerEvents = new PlayerEvents();
+        //         // initialize all events
+        //         inputEvents = new InputEvents();
         questEvents = new QuestEvents();
         rupeeEvents = new RupeeEvents();
         magicEvents = new MagicEvents();
         miscEvents = new MiscEvents();
+        playerEvents = new PlayerEvents();
+        collectibleEvents = new CollectibleEvents();
     }
 }

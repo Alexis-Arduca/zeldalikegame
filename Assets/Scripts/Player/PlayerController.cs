@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     private PlayerLife playerLife;
     private GameManager gameManager;
     private List<Key> playerKeys = new List<Key>();
+    private bool canMove = true;
 
     void Start()
     {
@@ -26,47 +27,62 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("GameManager not found!");
         }
+
+        GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
+    }
+
+    void OnDisable()
+    {
+        GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+    }
+
+    private void OnActionChange()
+    {
+        canMove = !canMove;
     }
 
     void Update()
     {
-        playerMovement.HandleMovement();
-
-        if (Input.GetKeyDown(KeyCode.E))
+        if (canMove)
         {
-            Item equippedItemLeft = inventory.GetEquippedItem(true);
-            if (equippedItemLeft != null)
-            {
-                equippedItemLeft.Use();
-            }
-            else
-            {
-                Debug.Log("No item equipped on Left Click.");
-            }
-        }
+            playerMovement.HandleMovement();
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Item equippedItemRight = inventory.GetEquippedItem(false);
-            if (equippedItemRight != null)
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                equippedItemRight.Use();
+                Item equippedItemLeft = inventory.GetEquippedItem(true);
+                if (equippedItemLeft != null)
+                {
+                    equippedItemLeft.Use();
+                }
+                else
+                {
+                    Debug.Log("No item equipped on Left Click.");
+                }
             }
-            else
+
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                Debug.Log("No item equipped on Right Click.");
-            } 
+                Item equippedItemRight = inventory.GetEquippedItem(false);
+                if (equippedItemRight != null)
+                {
+                    equippedItemRight.Use();
+                }
+                else
+                {
+                    Debug.Log("No item equipped on Right Click.");
+                }
+            }
         }
 
         ///====================///
-        /// Debug test command ///
-        ///====================///
+            /// Debug test command ///
+            ///====================///
 
-        // RedPotion
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            ObtainPotion(1);
-        }
+            // RedPotion
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                ObtainPotion(1);
+            }
         // BluePotion
         if (Input.GetKeyDown(KeyCode.X))
         {

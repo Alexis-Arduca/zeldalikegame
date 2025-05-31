@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeartContainer : MonoBehaviour
+public class HeartContainer : Collectibles
 {
     public PlayerLife playerLife;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected override void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -14,5 +14,10 @@ public class HeartContainer : MonoBehaviour
             GameEventsManager.instance.miscEvents.HeartContainerCollected();
             Destroy(gameObject);
         }
+    }
+
+    public override void OnBuy()
+    {
+        GameEventsManager.instance.miscEvents.HeartContainerCollected();
     }
 }
