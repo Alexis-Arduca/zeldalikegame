@@ -10,27 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37b4f32f50f10534cb8bf2c3c1abe3cb, type: 3}
-  m_Name: Dialogue1
+  m_Name: ShopDialogue
   m_EditorClassIdentifier: 
-  npcName: Chris
+  npcName: 
   lines:
-  - text: Hey, welcome to Cocorico. Are you good today ?
-    choices:
-    - text: Yes
-      nextLineIndex: 1
-    - text: No
-      nextLineIndex: 3
-    isEndOfBranch: 0
-    tags: 
-  - text: Oh cool, happy to hear that.
-    choices: []
-    isEndOfBranch: 0
-    tags: 
-  - text: I hope you will like our village.
+  - text: Hey, welcome to my shop. Do you need something ?
     choices: []
     isEndOfBranch: 1
     tags: 
-  - text: Oh ...
+  - text: Thank you for your purchase !
+    choices: []
+    isEndOfBranch: 1
+    tags: 
+  - text: See ya.
     choices: []
     isEndOfBranch: 1
     tags: 

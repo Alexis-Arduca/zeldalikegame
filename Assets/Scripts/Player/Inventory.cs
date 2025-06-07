@@ -34,7 +34,6 @@ public class Inventory
         {
             if (item.itemName == itemName)
             {
-                // Détermine quel emplacement équiper
                 if (isLeftClick)
                 {
                     if (equippedItemLeftClick != null) equippedItemLeftClick.isEquipped = false;

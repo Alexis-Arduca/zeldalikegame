@@ -10,26 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37b4f32f50f10534cb8bf2c3c1abe3cb, type: 3}
-  m_Name: Dialogue1
+  m_Name: QuestDialogue
   m_EditorClassIdentifier: 
-  npcName: Chris
+  npcName: "Fran\xE7is"
   lines:
-  - text: Hey, welcome to Cocorico. Are you good today ?
+  - text: Hey, I need your help.
+    choices: []
+    isEndOfBranch: 0
+    tags: 
+  - text: I lost my Cucoo in the village, can you help me to find her ?
     choices:
-    - text: Yes
-      nextLineIndex: 1
-    - text: No
+    - text: Sure !
+      nextLineIndex: 2
+    - text: No, sorry ...
       nextLineIndex: 3
     isEndOfBranch: 0
     tags: 
-  - text: Oh cool, happy to hear that.
-    choices: []
-    isEndOfBranch: 0
-    tags: 
-  - text: I hope you will like our village.
+  - text: Oh, glad to hear that. Try to find her and come back see me when you find
+      her.
     choices: []
     isEndOfBranch: 1
-    tags: 
+    tags: '#ACCEPT_SIDEQUEST:NpcTestQuest'
   - text: Oh ...
     choices: []
     isEndOfBranch: 1

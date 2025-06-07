@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SideQuestSO", menuName = "ScriptableObjects/SideQuestSO", order = 1)]
@@ -16,9 +14,9 @@ public class SideQuestSO : ScriptableObject
 
     private void OnValidate()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         id = this.name;
         UnityEditor.EditorUtility.SetDirty(this);
-        #endif
+#endif
     }
 }

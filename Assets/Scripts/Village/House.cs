@@ -17,6 +17,8 @@ public class House : MonoBehaviour
         {
             fadeImage.color = new Color(0, 0, 0, 0);
         }
+
+        fadeImage.gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -30,6 +32,7 @@ public class House : MonoBehaviour
 
     private IEnumerator Transition()
     {
+        fadeImage.gameObject.SetActive(true);
         isTransitioning = true;
 
         yield return StartCoroutine(Fade(0f, 1f, 1f));
@@ -39,6 +42,7 @@ public class House : MonoBehaviour
         yield return StartCoroutine(Fade(1f, 0f, 1f));
 
         isTransitioning = false;
+        fadeImage.gameObject.SetActive(false);
     }
 
     private IEnumerator Fade(float startAlpha, float endAlpha, float duration)

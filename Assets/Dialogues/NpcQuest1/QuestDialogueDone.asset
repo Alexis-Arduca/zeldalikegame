@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b4f32f50f10534cb8bf2c3c1abe3cb, type: 3}
+  m_Name: QuestDialogueDone
+  m_EditorClassIdentifier: 
+  npcName: Sarashla
+  dialogueLines:
+  - Thank you for help me find my cucoo.
+  - Take this bottle as a reward !
+  typingSpeed: 0.05
+  autoProgressLines: 01
+  autoProgressDelay: 1.5
+  choices:
+  - choicesForLine: []
+  - choicesForLine:
+    - choiceText: Sure
+      nextLineIndex: 2
+    - choiceText: No sorry...
+      nextLineIndex: 3

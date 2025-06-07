@@ -12,6 +12,7 @@ public class PlayerAttack : MonoBehaviour
     public GameObject attackZoneRight;
 
     public float attackDuration = 0.3f;
+    private bool canAttack = true;
 
     private void Start()
     {
@@ -21,11 +22,23 @@ public class PlayerAttack : MonoBehaviour
         attackZoneDown.SetActive(false);
         attackZoneLeft.SetActive(false);
         attackZoneRight.SetActive(false);
+
+        GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
+    }
+
+    void OnDisable()
+    {
+        GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+    }
+
+    private void OnActionChange()
+    {
+        canAttack = !canAttack;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && canAttack)
         {
             StopAllCoroutines();
             StartCoroutine(PerformAttack());

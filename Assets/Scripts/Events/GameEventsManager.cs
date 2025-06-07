@@ -12,6 +12,7 @@ public class GameEventsManager : MonoBehaviour
     public MiscEvents miscEvents;
     public PlayerEvents playerEvents;
     public CollectibleEvents collectibleEvents;
+    public VillageEvents villageEvents;
 
     private void Awake()
     {
@@ -29,5 +30,6 @@ public class GameEventsManager : MonoBehaviour
         miscEvents = new MiscEvents();
         playerEvents = new PlayerEvents();
         collectibleEvents = new CollectibleEvents();
+        villageEvents = new VillageEvents();
     }
 }

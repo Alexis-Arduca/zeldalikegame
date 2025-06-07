@@ -1,29 +1,26 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class DialogueChoice
+public class DialogueLine
 {
-    public string choiceText;
-    public int nextLineIndex;
+    [TextArea] public string text;
+    public List<DialogueChoice> choices;
+    public bool isEndOfBranch;
+    public string tags;
 }
 
 [System.Serializable]
-public class DialogueLineChoices
+public class DialogueChoice
 {
-    public List<DialogueChoice> choicesForLine;
+    public string text;
+    public int nextLineIndex;
 }
-
 
 [CreateAssetMenu(fileName = "NewDialogue", menuName = "Dialogue")]
 public class Dialogue : ScriptableObject
 {
     public string npcName;
-    public string[] dialogueLines;
+    public List<DialogueLine> lines;
     public float typingSpeed = 0.05f;
-    public bool[] autoProgressLines;
-    public float autoProgressDelay = 1.5f;
-    public List<DialogueLineChoices> choices;
 }
-

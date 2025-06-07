@@ -17,6 +17,8 @@ public class InventoryUI : MonoBehaviour
     public Sprite fairySprite;
     public Sprite emptySprite;
 
+    private bool canOpenInv = true;
+
     void Start()
     {
         inventoryPanel.SetActive(false);
@@ -34,11 +36,25 @@ public class InventoryUI : MonoBehaviour
 
         UpdateItemDisplay();
         UpdateEquippedImages();
+
+        GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
+    }
+
+    void OnDisable()
+    {
+        GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+    }
+
+    private void OnActionChange()
+    {
+        canOpenInv = !canOpenInv;
+
+        if (!canOpenInv) { inventoryPanel.SetActive(canOpenInv); }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) 
+        if (Input.GetKeyDown(KeyCode.K) && canOpenInv) 
         {
             ToggleInventoryAndQuestMenu();
         }

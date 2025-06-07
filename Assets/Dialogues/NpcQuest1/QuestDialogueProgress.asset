@@ -10,13 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37b4f32f50f10534cb8bf2c3c1abe3cb, type: 3}
-  m_Name: Dialogue2
+  m_Name: QuestDialogueProgress
   m_EditorClassIdentifier: 
-  npcName: Chris
+  npcName: Sarashla
   dialogueLines:
-  - Hey, welcome to my shop.
-  - See ya
+  - You still not complete what I ask you.
   typingSpeed: 0.05
-  autoProgressLines: 0101
+  autoProgressLines: 01
   autoProgressDelay: 1.5
-  choices: []
+  choices:
+  - choicesForLine: []
+  - choicesForLine:
+    - choiceText: Sure
+      nextLineIndex: 2
+    - choiceText: No sorry...
+      nextLineIndex: 3

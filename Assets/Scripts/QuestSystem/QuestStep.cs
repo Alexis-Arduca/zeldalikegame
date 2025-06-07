@@ -1,51 +1,23 @@
-using System.Collections;
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-
 
 public abstract class QuestStep : MonoBehaviour
 {
-    private bool isFinished = false;
-    private string questId;
-    private string sideQuestId;
+    protected string questId;
+    protected ScriptableObject questInfo;
+    protected bool isFinished = false;
 
-    private void Start()
-    {}
-
-    public void InitializeQuestStep(string questId)
+    public virtual void InitializeQuestStep(string questId, ScriptableObject questInfo)
     {
         this.questId = questId;
+        this.questInfo = questInfo;
     }
 
-    public void InitializeSideQuestStep(string questId)
+    public void ProgressStep()
     {
-        this.sideQuestId = questId;
+        if (isFinished) return;
+        isFinished = true;
+        OnStepCompleted();
     }
 
-    protected void VerificationQuestStep()
-    {
-        GameEventsManager.instance.questEvents.ProgressQuest(questId);
-    }
-
-    protected void FinishQuestStep()
-    {
-        if (!isFinished)
-        {
-            isFinished = true;
-            GameEventsManager.instance.questEvents.FinishQuest(questId);
-            Destroy(this.gameObject);
-        }
-    }
-
-    protected void FinishSideQuestStep()
-    {
-        if (!isFinished)
-        {
-            isFinished = true;
-            GameEventsManager.instance.questEvents.FinishSideQuest(sideQuestId);
-            Destroy(this.gameObject);
-        }
-    }
+    protected abstract void OnStepCompleted();
 }

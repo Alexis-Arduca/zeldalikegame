@@ -40,20 +40,15 @@ public class ShopManager : MonoBehaviour
 
     public void BuyItem(GameObject item, int price)
     {
-        Debug.Log("Tentative d'achat de " + item.name + " pour " + price + " Rubis");
-
         if (rupeeManager.GetRupee() >= price)
         {
             GameEventsManager.instance.rupeeEvents.OnRupeeUsed(price);
+            currentNPC.OnTradeCompleted();
 
             if (playerTransform != null)
             {
                 item.GetComponent<Collectibles>().OnBuy();
             }
-        }
-        else
-        {
-            Debug.Log("Pas assez de Rubis");
         }
     }
 
@@ -63,7 +58,7 @@ public class ShopManager : MonoBehaviour
 
         if (currentNPC != null)
         {
-            currentNPC.OnTradeCompleted();
+            currentNPC.OnShopClosed();
             currentNPC = null;
         }
     }

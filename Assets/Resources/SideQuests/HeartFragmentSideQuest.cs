@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class HeartFragmentSideQuest : QuestStep
+public class HeartFragmentSideQuest : SideQuestStep
 {
     private int heartCollected = 0;
     private int heartToComplete = 4;
@@ -25,7 +23,18 @@ public class HeartFragmentSideQuest : QuestStep
         }
         if (heartCollected >= heartToComplete)
         {
-            FinishQuestStep();
+            ProgressStep();
         }
+    }
+
+    public override void InitializeQuestStep(string questId, ScriptableObject questInfo)
+    {
+        base.InitializeQuestStep(questId, questInfo);
+        Debug.Log($"Initialisation de l'étape de quête secondaire HeartFragmentSideQuest : {questId}");
+    }
+
+    protected override void OnStepCompleted()
+    {
+        base.OnStepCompleted();
     }
 }

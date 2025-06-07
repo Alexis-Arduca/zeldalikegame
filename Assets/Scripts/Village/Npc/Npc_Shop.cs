@@ -7,28 +7,30 @@ public class NPC_Shop : NPC
     public GameObject shopPanel;
     public List<GameObject> itemsForSale;
     public List<int> itemsPrice;
-    private bool hasTraded = false;
+    private bool isShopOpen = false;
 
     protected override void Update()
     {
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.O))
         {
-            if (!hasTraded)
+            if (!isShopOpen)
             {
+                GameEventsManager.instance.playerEvents.OnActionChange();
                 DialogueManager.Instance.StartDialogue(dialogueData, 0);
                 shopPanel.GetComponent<ShopManager>().OpenShop(this);
-            }
-            else
-            {
-                DialogueManager.Instance.StartDialogue(dialogueData, 1);
-                hasTraded = false;
+                isShopOpen = true;
             }
         }
     }
 
     public void OnTradeCompleted()
     {
-        hasTraded = true;
-        shopPanel.SetActive(false);
+        DialogueManager.Instance.StartDialogue(dialogueData, 1);
+    }
+
+    public void OnShopClosed()
+    {
+        DialogueManager.Instance.StartDialogue(dialogueData, 2);
+        isShopOpen = false;
     }
 }

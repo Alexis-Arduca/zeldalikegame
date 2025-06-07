@@ -1,18 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MoreQuestLater : QuestStep
+public class MoreQuestLater : MainQuestStep
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        // Logique à ajouter plus tard
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        // Logique à ajouter plus tard
+    }
+
+    public override void InitializeQuestStep(string questId, ScriptableObject questInfo)
+    {
+        base.InitializeQuestStep(questId, questInfo);
+        Debug.Log($"Initialisation de l'étape de quête principale MoreQuestLater : {questId}");
+    }
+
+    protected override void OnStepCompleted()
+    {
+        base.OnStepCompleted();
     }
 }

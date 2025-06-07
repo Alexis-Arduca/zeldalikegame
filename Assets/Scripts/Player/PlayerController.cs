@@ -74,15 +74,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        ///====================///
-            /// Debug test command ///
-            ///====================///
+        DebugUpdate();
+    }
 
-            // RedPotion
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                ObtainPotion(1);
-            }
+    void DebugUpdate()
+    {
+        ///====================///
+        /// Debug test command ///
+        ///====================///
+
+        // RedPotion
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            ObtainPotion(1);
+        }
         // BluePotion
         if (Input.GetKeyDown(KeyCode.X))
         {
