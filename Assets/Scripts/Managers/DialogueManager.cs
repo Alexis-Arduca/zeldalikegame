@@ -85,20 +85,21 @@ public class DialogueManager : MonoBehaviour
             {
                 string questId = tag.Replace("#COMPLETE_SIDEQUEST:", "");
                 SideQuestSO quest = Resources.Load<SideQuestSO>($"SideQuests/{questId}");
-                if (quest != null) GameEventsManager.instance.questEvents.FinishSideQuest(quest);
+                GameEventsManager.instance.cocoricoQuestEvents.OnCucooQuestComplete();
+                GameEventsManager.instance.questEvents.FinishSideQuest(quest);
             }
-            else if (tag.StartsWith("#ACCEPT_MAINQUEST:"))
-            {
-                string questId = tag.Replace("#ACCEPT_MAINQUEST:", "");
-                QuestInfoSO quest = Resources.Load<QuestInfoSO>($"MainQuests/{questId}");
-                if (quest != null) GameEventsManager.instance.questEvents.StartQuest(quest);
-            }
-            else if (tag.StartsWith("#COMPLETE_MAINQUEST:"))
-            {
-                string questId = tag.Replace("#COMPLETE_MAINQUEST:", "");
-                QuestInfoSO quest = Resources.Load<QuestInfoSO>($"MainQuests/{questId}");
-                if (quest != null) GameEventsManager.instance.questEvents.FinishQuest(quest);
-            }
+                else if (tag.StartsWith("#ACCEPT_MAINQUEST:"))
+                {
+                    string questId = tag.Replace("#ACCEPT_MAINQUEST:", "");
+                    QuestInfoSO quest = Resources.Load<QuestInfoSO>($"MainQuests/{questId}");
+                    if (quest != null) GameEventsManager.instance.questEvents.StartQuest(quest);
+                }
+                else if (tag.StartsWith("#COMPLETE_MAINQUEST:"))
+                {
+                    string questId = tag.Replace("#COMPLETE_MAINQUEST:", "");
+                    QuestInfoSO quest = Resources.Load<QuestInfoSO>($"MainQuests/{questId}");
+                    if (quest != null) GameEventsManager.instance.questEvents.FinishQuest(quest);
+                }
         }
     }
 

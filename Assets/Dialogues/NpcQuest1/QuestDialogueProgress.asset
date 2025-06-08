@@ -13,15 +13,9 @@ MonoBehaviour:
   m_Name: QuestDialogueProgress
   m_EditorClassIdentifier: 
   npcName: Sarashla
-  dialogueLines:
-  - You still not complete what I ask you.
+  lines:
+  - text: Thanks !
+    choices: []
+    isEndOfBranch: 1
+    tags: 
   typingSpeed: 0.05
-  autoProgressLines: 01
-  autoProgressDelay: 1.5
-  choices:
-  - choicesForLine: []
-  - choicesForLine:
-    - choiceText: Sure
-      nextLineIndex: 2
-    - choiceText: No sorry...
-      nextLineIndex: 3

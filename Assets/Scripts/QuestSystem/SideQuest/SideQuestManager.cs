@@ -50,8 +50,6 @@ public class SideQuestManager : MonoBehaviour
 
     private void StartQuest(SideQuestSO questInfo)
     {
-        Debug.Log($"StartQuest called with the quest ID : {questInfo.id} (Name : {questInfo.displayName})");
-
         if (sideQuestMap.TryGetValue(questInfo.id, out SideQuest quest))
         {
             quest.state = QuestState.CAN_START;
@@ -61,10 +59,6 @@ public class SideQuestManager : MonoBehaviour
             quest.state = QuestState.IN_PROGRESS;
 
             GameEventsManager.instance.questEvents.SideQuestStateChange(quest);
-        }
-        else
-        {
-            Debug.LogWarning($"Failure : Quest with ID {questInfo.id} not found in sideQuestMap.");
         }
     }
 
@@ -91,9 +85,10 @@ public class SideQuestManager : MonoBehaviour
         {
             if (quest.state == QuestState.CAN_FINISH)
             {
+                Debug.Log("La bite");
                 quest.state = QuestState.FINISHED;
                 GameEventsManager.instance.questEvents.SideQuestStateChange(quest);
-                sideQuestMap.Remove(questInfo.id);
+                // sideQuestMap.Remove(questInfo.id);
             }
         }
     }

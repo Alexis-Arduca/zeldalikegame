@@ -20,6 +20,7 @@ TagManager:
   - PlayerWeapon
   - EnemyWeapon
   - TeleportPoint
+  - Cucoo
   layers:
   - Default
   - TransparentFX

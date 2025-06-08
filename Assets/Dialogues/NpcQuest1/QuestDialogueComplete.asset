@@ -13,15 +13,9 @@ MonoBehaviour:
   m_Name: QuestDialogueComplete
   m_EditorClassIdentifier: 
   npcName: Sarashla
-  dialogueLines:
-  - I love my cucoo <3.
+  lines:
+  - text: Thanks !
+    choices: []
+    isEndOfBranch: 1
+    tags: 
   typingSpeed: 0.05
-  autoProgressLines: 01
-  autoProgressDelay: 1.5
-  choices:
-  - choicesForLine: []
-  - choicesForLine:
-    - choiceText: Sure
-      nextLineIndex: 2
-    - choiceText: No sorry...
-      nextLineIndex: 3

@@ -13,16 +13,9 @@ MonoBehaviour:
   m_Name: QuestDialogueDone
   m_EditorClassIdentifier: 
   npcName: Sarashla
-  dialogueLines:
-  - Thank you for help me find my cucoo.
-  - Take this bottle as a reward !
+  lines:
+  - text: Oh, my cucoo ! Thanks for the help.
+    choices: []
+    isEndOfBranch: 1
+    tags: '#COMPLETE_SIDEQUEST:NpcTestQuest'
   typingSpeed: 0.05
-  autoProgressLines: 01
-  autoProgressDelay: 1.5
-  choices:
-  - choicesForLine: []
-  - choicesForLine:
-    - choiceText: Sure
-      nextLineIndex: 2
-    - choiceText: No sorry...
-      nextLineIndex: 3

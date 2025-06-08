@@ -2,12 +2,33 @@ using UnityEngine;
 
 public class NpcTestQuest : SideQuestStep
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    private void Start()
     {
-        if (other != null && other.CompareTag("Cucoo"))
+        GameEventsManager.instance.cocoricoQuestEvents.onCucooDetect += CucooDetect;
+        GameEventsManager.instance.cocoricoQuestEvents.onCucooQuestComplete += ProgressStep;
+    }
+
+    private void OnDisable()
+    {
+        GameEventsManager.instance.cocoricoQuestEvents.onCucooDetect -= CucooDetect;
+        GameEventsManager.instance.cocoricoQuestEvents.onCucooQuestComplete -= ProgressStep;
+    }
+
+    private void CucooDetect()
+    {
+        Debug.Log("Test");
+
+        SideQuestSO sideQuestSO = questInfo as SideQuestSO;
+        if (sideQuestSO == null)
         {
-            Debug.Log("Hey");
-            ProgressStep();
+            Debug.LogError("questInfo is not a SideQuestSO");
+            return;
+        }
+
+        SideQuest quest = SideQuestManager.Instance.GetSideQuestById(questId);
+        if (quest != null)
+        {
+            quest.state = QuestState.CAN_FINISH;
         }
     }
 
