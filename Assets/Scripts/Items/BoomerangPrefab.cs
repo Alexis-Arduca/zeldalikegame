@@ -54,7 +54,7 @@ public class BoomerangPrefab : MonoBehaviour
             if (enemy != null)
             {
                 float stunDuration = 2.0f;
-                enemy.ApplyStun(stunDuration);
+                enemy.Freeze(stunDuration);
                 Debug.Log("Ennemi étourdi par le boomerang : " + collision.name);
             }
         }

@@ -33,7 +33,7 @@ public class BombBehaviour : MonoBehaviour
                 if (enemy != null)
                 {
                     float stunDuration = 2.0f;
-                    enemy.ApplyStun(stunDuration);
+                    enemy.Freeze(stunDuration);
                     Debug.Log("Ennemi étourdi : " + obj.name);
 
                     Vector2 knockbackDirection = (obj.transform.position - transform.position).normalized;

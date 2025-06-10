@@ -23,25 +23,21 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleMovement(Vector2 movement)
     {
-        // Si le joueur est sur l'eau, téléportation à la dernière position sûre
         if (isOnWater)
         {
             transform.position = lastSafePosition;
             isOnWater = false;
-            rb.velocity = Vector2.zero; // Réinitialiser la vélocité
+            rb.velocity = Vector2.zero;
             return;
         }
 
-        // Mettre à jour la dernière position sûre
         if (!isOnWater)
         {
             lastSafePosition = transform.position;
         }
 
-        // Calculer la vélocité
         Vector2 moveVelocity = isUsingItem ? Vector2.zero : movement * moveSpeed;
 
-        // Mettre à jour l'animation
         if (moveVelocity != Vector2.zero)
         {
             animator.SetBool("isMoving", true);
@@ -54,7 +50,6 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("lastY", lastDirection.y);
         }
 
-        // Appliquer la vélocité
         animator.SetFloat("xVelocity", moveVelocity.x);
         animator.SetFloat("yVelocity", moveVelocity.y);
         rb.velocity = moveVelocity;

@@ -90,13 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f8faeffc42eba4f9e633eb1704b57d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
-  speed: 0
   damage: 1
-  detectionRange: 0
-  attackRange: 0
-  patrolSpeed: 0
-  attackCooldown: 0
 --- !u!1 &9108812267609702288
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,17 +192,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64644b9a2fa4e6d428a96a720c91210d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
-  speed: 2
+  health: 50
   damage: 1
-  detectionRange: 5
-  attackRange: 1
   patrolSpeed: 2
-  attackCooldown: 3
+  detectionRange: 5
+  patrolPauseDuration: 2
+  freezeDuration: 3
   retreatDistance: 1
   safeDistance: 0
+  attackRange: 1
   swordHitbox: {fileID: 0}
   knockbackForce: 0
+  speed: 2
 --- !u!61 &5197627913859000193
 BoxCollider2D:
   m_ObjectHideFlags: 0

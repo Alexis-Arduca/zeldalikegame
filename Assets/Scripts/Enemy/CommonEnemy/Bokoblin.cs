@@ -2,70 +2,57 @@ using UnityEngine;
 
 public class Bokoblin : Enemy
 {
-    public float retreatDistance;
-    public float safeDistance;
+    public float retreatDistance = 2f;
+    public float safeDistance = 3f;
+    public float attackRange = 1.5f;
     public Transform swordHitbox;
-    public float knockbackForce;
+    public float knockbackForce = 2f;
+    public float speed = 2f;
+    private float stunDuration = 2f;
 
     private Animator animator;
-
-    private bool isStunned = false;
-    private float stunDuration = 2.0f;
-    private float stunTimer = 0.0f;
+    private float attackTimer;
+    private float attackCooldown = 1.5f;
 
     protected override void Start()
     {
         base.Start();
-        health = 50;
-        speed = 2f;
-        damage = 10;
-        detectionRange = 5f;
-        attackRange = 1.5f;
-        retreatDistance = 2f;
-        safeDistance = 3f;
-        knockbackForce = 2f;
 
         animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator component missing on Bokoblin!");
+        }
+        if (swordHitbox == null)
+        {
+            Debug.LogWarning("SwordHitbox not assigned on Bokoblin!");
+        }
+        else
+        {
+            swordHitbox.gameObject.SetActive(false);
+        }
     }
 
     protected override void Update()
     {
-        if (isStunned)
+        if (player == null) return;
+
+        if (currentState == EnemyState.Frozen)
         {
-            stunTimer -= Time.deltaTime;
-            if (stunTimer <= 0)
+            freezeTimer -= Time.deltaTime;
+            if (freezeTimer <= 0)
             {
-                isStunned = false; 
+                Unfreeze();
             }
             return;
         }
 
         base.Update();
         UpdateAnimation();
-    }
 
-    private void UpdateAnimation()
-    {
-        Vector2 velocity = (player.position - transform.position).normalized;
-
-        if (currentState == EnemyState.Chasing || currentState == EnemyState.Patrolling)
+        if (attackTimer > 0)
         {
-            animator.SetFloat("MoveX", velocity.x);
-            animator.SetFloat("MoveY", velocity.y);
-            animator.SetBool("IsMoving", true);
-
-            if (velocity.x < 0)
-            {
-                transform.localScale = new Vector3(-2, 2, 2);
-            }
-            else if (velocity.x > 0)
-            {
-                transform.localScale = new Vector3(2, 2, 2);
-            }
-        }
-        else
-        {
-            animator.SetBool("IsMoving", false);
+            attackTimer -= Time.deltaTime;
         }
     }
 
@@ -74,6 +61,10 @@ public class Bokoblin : Enemy
         if (distanceToPlayer > detectionRange)
         {
             currentState = EnemyState.Patrolling;
+        }
+        else if (distanceToPlayer <= attackRange && attackTimer <= 0)
+        {
+            Attack();
         }
         else if (distanceToPlayer < retreatDistance)
         {
@@ -87,22 +78,84 @@ public class Bokoblin : Enemy
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Attack()
     {
-        if (collision.CompareTag("PlayerWeapon"))
-        {
-            Vector2 knockbackDirection = (transform.position - player.position).normalized;
-            transform.position += (Vector3)knockbackDirection * knockbackForce;
+        if (swordHitbox == null || player == null) return;
 
-            TakeDamage(10);
+        animator.SetTrigger("Attack");
+        swordHitbox.gameObject.SetActive(true);
+        Vector2 direction = (player.position - transform.position).normalized;
+        swordHitbox.position = transform.position + (Vector3)direction * 0.5f;
+        Invoke(nameof(DeactivateHitbox), 0.3f);
+        attackTimer = attackCooldown;
+    }
+
+    private void DeactivateHitbox()
+    {
+        if (swordHitbox != null)
+        {
+            swordHitbox.gameObject.SetActive(false);
         }
     }
 
-    public void ApplyStun(float duration)
+    private void UpdateAnimation()
     {
-        isStunned = true;
-        stunDuration = duration;
-        stunTimer = stunDuration;
-        Debug.Log("Enemy is stunned for " + duration + " seconds.");
+        if (currentState == EnemyState.Frozen)
+        {
+            animator.SetBool("IsMoving", false);
+            return;
+        }
+
+        Vector2 velocity = Vector2.zero;
+        if (currentState == EnemyState.Chasing)
+        {
+            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+            if (distanceToPlayer < retreatDistance)
+            {
+                velocity = (transform.position - player.position).normalized;
+            }
+            else if (distanceToPlayer > safeDistance)
+            {
+                velocity = (player.position - transform.position).normalized;
+            }
+        }
+        else if (currentState == EnemyState.Patrolling)
+        {
+            velocity = (patrolPoint - (Vector2)transform.position).normalized;
+        }
+
+        animator.SetFloat("MoveX", velocity.x);
+        animator.SetFloat("MoveY", velocity.y);
+        animator.SetBool("IsMoving", velocity != Vector2.zero);
+
+        if (velocity.x < 0)
+        {
+            transform.localScale = new Vector3(-2, 2, 2);
+        }
+        else if (velocity.x > 0)
+        {
+            transform.localScale = new Vector3(2, 2, 2);
+        }
+    }
+
+    protected override void OnCollisionEnter2D(Collision2D collision)
+    {
+        base.OnCollisionEnter2D(collision);
+        if (collision.gameObject.CompareTag("PlayerWeapon"))
+        {
+            Vector2 knockbackDirection = (transform.position - player.position).normalized;
+            TakeDamage(10, knockbackDirection, knockbackForce);
+            Freeze(stunDuration);
+        }
+    }
+
+    protected override void Unfreeze()
+    {
+        base.Unfreeze();
+        attackTimer = 0;
+        if (swordHitbox != null)
+        {
+            swordHitbox.gameObject.SetActive(false);
+        }
     }
 }

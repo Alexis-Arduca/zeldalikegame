@@ -1,14 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyWeapon : Enemy
+public class EnemyWeapon : MonoBehaviour
 {
+    public int damage = 1;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<PlayerLife>().TakeDamage(damage);
+            var playerLife = collision.GetComponent<PlayerLife>();
+            if (playerLife != null)
+            {
+                playerLife.TakeDamage(damage);
+                Debug.Log($"EnemyWeapon dealt {damage} damage to player.");
+            }
         }
 
         if (collision.CompareTag("PlayerWeapon"))
@@ -18,12 +23,7 @@ public class EnemyWeapon : Enemy
             {
                 Vector2 knockbackDirection = (enemy.transform.position - collision.transform.position).normalized;
                 float knockbackForce = 1.1f;
-
-                Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
-                if (enemyRb != null)
-                {
-                    enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-                }
+                enemy.TakeDamage(10, knockbackDirection, knockbackForce);
             }
         }
     }

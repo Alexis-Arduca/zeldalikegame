@@ -14,8 +14,14 @@ public class PlayerLife : MonoBehaviour
     private double currentHeart;
     private int defense;
     private int heartFragment;
+
     public bool isInvincible = false;
+
     [SerializeField] private float invincibilityDuration = DEFAULT_INVINCIBILITY_DURATION;
+    [SerializeField] private float flickerSpeed = 0.1f;
+
+    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
 
     void Start()
     {
@@ -24,6 +30,8 @@ public class PlayerLife : MonoBehaviour
         heartFragment = 0;
         defense = 0;
         inventory = FindObjectOfType<GameManager>()?.GetInventory();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
 
         if (inventory == null)
         {
@@ -85,16 +93,33 @@ public class PlayerLife : MonoBehaviour
     {
         if (isInvincible) return;
 
+        isInvincible = true;
         double damage = Math.Max(attack - defense, 0);
         currentHeart = Math.Max(currentHeart - damage, 0);
-        Debug.Log($"Player took {damage} damage. Current hearts: {currentHeart}");
+
         StartCoroutine(BecomeTemporarilyInvincible());
     }
 
     private IEnumerator BecomeTemporarilyInvincible()
     {
-        isInvincible = true;
-        yield return new WaitForSeconds(invincibilityDuration);
+        float timer = 0f;
+
+        while (timer < invincibilityDuration)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.enabled = !spriteRenderer.enabled;
+            }
+
+            yield return new WaitForSeconds(flickerSpeed);
+            timer += flickerSpeed;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = true;
+        }
+
         isInvincible = false;
     }
 
@@ -104,7 +129,6 @@ public class PlayerLife : MonoBehaviour
         {
             maxHeart += 1;
             currentHeart = maxHeart;
-            Debug.Log($"Max hearts increased! Current max hearts: {maxHeart}");
         }
     }
 
@@ -117,7 +141,6 @@ public class PlayerLife : MonoBehaviour
             {
                 maxHeart += 1;
                 heartFragment = 0;
-                Debug.Log($"Max hearts increased! Current max hearts: {maxHeart}");
             }
             currentHeart = maxHeart;
         }
@@ -125,6 +148,6 @@ public class PlayerLife : MonoBehaviour
 
     private void PlayerDeath()
     {
-        Debug.Log("Player is dead!");
+        //
     }
 }

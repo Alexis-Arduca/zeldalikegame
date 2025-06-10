@@ -1,43 +1,45 @@
 using UnityEngine;
 using System;
 
-public class Enemy : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
+public abstract class Enemy : MonoBehaviour
 {
-    public enum EnemyState { Idle, Patrolling, Chasing, Attacking, Frozen }
+    public enum EnemyState { Idle, Patrolling, Chasing, Frozen }
     protected EnemyState currentState;
 
-    public int health;
-    public float speed;
-    public int damage;
-    public float detectionRange;
-    public float attackRange;
-    public float patrolSpeed;
-    public float attackCooldown;
+    public int health = 3;
+    public int damage = 1;
+    public float patrolSpeed = 2f;
+    public float detectionRange = 5f;
     public float patrolPauseDuration = 2f;
     public float freezeDuration = 3f;
 
-    protected float attackTimer;
     protected Transform player;
+    protected Vector2 patrolPoint;
+    protected Vector2 lastDirection;
+    protected float patrolPauseTimer;
+    protected float freezeTimer;
+    protected Rigidbody2D rb;
 
-    private Vector2 patrolPoint;
-    private Vector2 lastDirection;
-    private float patrolPauseTimer;
-    private Vector2[] directions = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-    
-    private float freezeTimer;
+    protected Vector2[] directions = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+
+    protected virtual void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+    }
 
     protected virtual void Start()
     {
         currentState = EnemyState.Idle;
-        attackTimer = 0;
         freezeTimer = 0;
-
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
         }
-
         SetNewPatrolPoint();
     }
 
@@ -68,16 +70,18 @@ public class Enemy : MonoBehaviour
             case EnemyState.Chasing:
                 ChaseBehavior(distanceToPlayer);
                 break;
-            case EnemyState.Attacking:
-                AttackBehavior(distanceToPlayer);
-                break;
         }
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage, Vector2 knockbackDirection = default, float knockbackForce = 0)
     {
         health -= damage;
-        Debug.Log("Enemy took damage: " + damage + ". Remaining health: " + health);
+        Debug.Log($"{gameObject.name} took {damage} damage. Health: {health}");
+
+        if (knockbackForce > 0 && knockbackDirection != Vector2.zero)
+        {
+            rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+        }
 
         if (health <= 0)
         {
@@ -88,21 +92,14 @@ public class Enemy : MonoBehaviour
     public event Action OnDeath;
     protected virtual void Die()
     {
-        Debug.Log("Enemy died!");
+        Debug.Log($"{gameObject.name} died!");
         OnDeath?.Invoke();
         Destroy(gameObject);
     }
 
     protected virtual void IdleBehavior(float distanceToPlayer)
     {
-        if (distanceToPlayer <= detectionRange)
-        {
-            currentState = EnemyState.Chasing;
-        }
-        else
-        {
-            currentState = EnemyState.Patrolling;
-        }
+        currentState = EnemyState.Patrolling;
     }
 
     protected virtual void PatrolBehavior(float distanceToPlayer)
@@ -129,15 +126,10 @@ public class Enemy : MonoBehaviour
 
     protected virtual void ChaseBehavior(float distanceToPlayer)
     {
-        // Comportement à définir dans les sous-classes
+        // Each class will provide his logic
     }
 
-    protected virtual void AttackBehavior(float distanceToPlayer)
-    {
-        // Comportement à définir dans les sous-classes
-    }
-
-    protected void SetNewPatrolPoint()
+    protected virtual void SetNewPatrolPoint()
     {
         Vector2 randomDirection;
         do
@@ -149,18 +141,18 @@ public class Enemy : MonoBehaviour
         patrolPoint = (Vector2)transform.position + randomDirection * UnityEngine.Random.Range(1f, detectionRange / 2f);
     }
 
-    public void Freeze(float duration)
+    public virtual void Freeze(float duration)
     {
         if (currentState != EnemyState.Frozen)
         {
             currentState = EnemyState.Frozen;
             freezeTimer = duration;
-
+            rb.velocity = Vector2.zero;
             GetComponent<SpriteRenderer>().color = Color.cyan;
         }
     }
 
-    private void Unfreeze()
+    protected virtual void Unfreeze()
     {
         currentState = EnemyState.Idle;
         GetComponent<SpriteRenderer>().color = Color.white;
@@ -170,8 +162,12 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            collision.gameObject.GetComponent<PlayerLife>().TakeDamage(damage);
-            Debug.Log("Enemy dealt " + damage + " damage to the player.");
+            var playerLife = collision.gameObject.GetComponent<PlayerLife>();
+            if (playerLife != null)
+            {
+                playerLife.TakeDamage(damage);
+                Debug.Log($"{gameObject.name} dealt {damage} damage to player.");
+            }
         }
     }
 }

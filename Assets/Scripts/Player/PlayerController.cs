@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        // Initialize components
         playerInput = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
         playerAttack = GetComponent<PlayerAttack>();
@@ -25,15 +24,12 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("Inventory not found!");
         }
 
-        // Subscribe to input events
-        playerInput.OnMoveInput += (direction) => { if (canMove) playerMovement.HandleMovement(direction); }; // Passer la direction
+        playerInput.OnMoveInput += (direction) => { if (canMove) playerMovement.HandleMovement(direction); };
         playerInput.OnAttackInput += () => { if (canMove) playerAttack.PerformAttack(playerInput.AttackDirection); };
         playerInput.OnUseLeftItemInput += UseLeftItem;
         playerInput.OnUseRightItemInput += UseRightItem;
         playerInput.OnDebugPotionInput += ObtainPotion;
-        playerInput.OnDebugTakeDamageInput += () => playerLife.TakeDamage(1);
 
-        // Subscribe to game events
         GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
     }
 
