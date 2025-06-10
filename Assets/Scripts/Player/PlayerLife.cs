@@ -1,49 +1,50 @@
+using UnityEngine;
 using System.Collections;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class PlayerLife : MonoBehaviour
 {
+    private const int DEFAULT_MAX_HEART = 3;
+    private const int MAX_POSSIBLE_HEART = 16;
+    private const double DEFAULT_CURRENT_HEART = 2;
+    private const float DEFAULT_INVINCIBILITY_DURATION = 1f;
+
     private Inventory inventory;
-    private GameManager gameManager;
-    private int maxPossibleHeart;
     private int maxHeart;
     private double currentHeart;
     private int defense;
     private int heartFragment;
-
     public bool isInvincible = false;
-    public float invincibilityDuration = 1f;
+    [SerializeField] private float invincibilityDuration = DEFAULT_INVINCIBILITY_DURATION;
 
-    // Start is called before the first frame update
     void Start()
     {
-        maxPossibleHeart = 16;
-        maxHeart = 3;
-        currentHeart = 2;
+        maxHeart = DEFAULT_MAX_HEART;
+        currentHeart = DEFAULT_CURRENT_HEART;
         heartFragment = 0;
         defense = 0;
+        inventory = FindObjectOfType<GameManager>()?.GetInventory();
 
-        gameManager = FindObjectOfType<GameManager>();
-        inventory = gameManager.GetInventory();
+        if (inventory == null)
+        {
+            Debug.LogError("Inventory not found!");
+        }
 
         GameEventsManager.instance.collectibleEvents.onRecoveryHeartCollected += HealFromCollectible;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         GameEventsManager.instance.collectibleEvents.onRecoveryHeartCollected -= HealFromCollectible;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (currentHeart <= 0)
         {
             Bottle bottleWithFairy = GetBottleWithFairy();
             currentHeart = 0;
-                
+
             if (bottleWithFairy != null)
             {
                 bottleWithFairy.Use();
@@ -57,9 +58,8 @@ public class PlayerLife : MonoBehaviour
 
     private Bottle GetBottleWithFairy()
     {
-        for (int i = 0; i < inventory.items.Count; i++)
+        foreach (Item item in inventory.items)
         {
-            Item item = inventory.items[i];
             if (item is Bottle bottle && bottle.GetFairy())
             {
                 return bottle;
@@ -68,7 +68,6 @@ public class PlayerLife : MonoBehaviour
         return null;
     }
 
-
     public void UpdateCurrentHeart(double newHeart)
     {
         currentHeart = newHeart;
@@ -76,33 +75,19 @@ public class PlayerLife : MonoBehaviour
 
     public void HealFromCollectible(double heal)
     {
-        if (currentHeart + heal < maxHeart) {
-            currentHeart += heal;
-        } else {
-            currentHeart = maxHeart;
-        }
+        currentHeart = Math.Min(currentHeart + heal, maxHeart);
     }
 
-    public double GetMaxHeart()
-    {
-        return maxHeart;
-    }
-
-    public double GetCurrentHeart()
-    {
-        return currentHeart;
-    }
+    public double GetMaxHeart() => maxHeart;
+    public double GetCurrentHeart() => currentHeart;
 
     public void TakeDamage(double attack)
     {
         if (isInvincible) return;
 
         double damage = Math.Max(attack - defense, 0);
-        currentHeart -= damage;
-        currentHeart = Math.Max(currentHeart, 0);
-
+        currentHeart = Math.Max(currentHeart - damage, 0);
         Debug.Log($"Player took {damage} damage. Current hearts: {currentHeart}");
-
         StartCoroutine(BecomeTemporarilyInvincible());
     }
 
@@ -115,19 +100,19 @@ public class PlayerLife : MonoBehaviour
 
     public void HeartContainerUpdater()
     {
-        if (maxHeart < maxPossibleHeart) {
+        if (maxHeart < MAX_POSSIBLE_HEART)
+        {
             maxHeart += 1;
             currentHeart = maxHeart;
-
             Debug.Log($"Max hearts increased! Current max hearts: {maxHeart}");
         }
     }
 
     public void HeartFragmentUpdater()
     {
-        if (maxHeart < maxPossibleHeart) {
+        if (maxHeart < MAX_POSSIBLE_HEART)
+        {
             heartFragment += 1;
-
             if (heartFragment >= 4)
             {
                 maxHeart += 1;

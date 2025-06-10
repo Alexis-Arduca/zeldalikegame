@@ -1,9 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerResources : MonoBehaviour
 {
+    private const int DEFAULT_MAX_ARROW = 30;
+    private const int DEFAULT_MAX_BOMB = 10;
+    private const int DEFAULT_QUIVER_LEVEL = 1;
+    private const int DEFAULT_BOMB_BAG_LEVEL = 1;
+
     private int currentArrow;
     private int maxArrow;
     private int quiverLevel;
@@ -11,23 +14,20 @@ public class PlayerResources : MonoBehaviour
     private int maxBomb;
     private int bombBagLevel;
 
-    // Start is called before the first frame update
     void Start()
     {
-        maxArrow = 30;
-        maxBomb = 10;
-
+        maxArrow = DEFAULT_MAX_ARROW;
+        maxBomb = DEFAULT_MAX_BOMB;
         currentArrow = maxArrow;
         currentBomb = maxBomb;
-
-        quiverLevel = 1;
-        bombBagLevel = 1;
+        quiverLevel = DEFAULT_QUIVER_LEVEL;
+        bombBagLevel = DEFAULT_BOMB_BAG_LEVEL;
 
         GameEventsManager.instance.collectibleEvents.onArrowCollected += RefillArrow;
         GameEventsManager.instance.collectibleEvents.onBombCollected += RefillBomb;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         GameEventsManager.instance.collectibleEvents.onArrowCollected -= RefillArrow;
         GameEventsManager.instance.collectibleEvents.onBombCollected -= RefillBomb;
@@ -45,7 +45,8 @@ public class PlayerResources : MonoBehaviour
 
     public bool UseBomb()
     {
-        if (currentBomb > 0) {
+        if (currentBomb > 0)
+        {
             currentBomb -= 1;
             return true;
         }
@@ -54,35 +55,39 @@ public class PlayerResources : MonoBehaviour
 
     public void RefillArrow(int value)
     {
-        currentArrow = (currentArrow + value > maxArrow) ? maxArrow : currentArrow + value;
+        currentArrow = Mathf.Clamp(currentArrow + value, 0, maxArrow);
     }
 
     public void RefillBomb(int value)
     {
-        currentBomb = (currentBomb + value > maxBomb) ? maxBomb : currentBomb + value;
+        currentBomb = Mathf.Clamp(currentBomb + value, 0, maxBomb);
     }
 
-    private void QuiverUpdate()
+    public void QuiverUpdate()
     {
         quiverLevel += 1;
-
-        if (quiverLevel == 2) {
+        if (quiverLevel == 2)
+        {
             maxArrow = 50;
             currentArrow = maxArrow;
-        } else if (quiverLevel == 3) {
+        }
+        else if (quiverLevel == 3)
+        {
             maxArrow = 99;
             currentArrow = maxArrow;
         }
     }
 
-    private void BombBagUpdate()
+    public void BombBagUpdate()
     {
         bombBagLevel += 1;
-
-        if (bombBagLevel == 2) {
+        if (bombBagLevel == 2)
+        {
             maxBomb = 20;
             currentBomb = maxBomb;
-        } else if (bombBagLevel == 3) {
+        }
+        else if (bombBagLevel == 3)
+        {
             maxBomb = 30;
             currentBomb = maxBomb;
         }

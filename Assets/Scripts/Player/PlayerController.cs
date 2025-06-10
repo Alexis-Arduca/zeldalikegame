@@ -1,33 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
-    private Inventory inventory;
+    private PlayerInput playerInput;
     private PlayerMovement playerMovement;
     private PlayerAttack playerAttack;
     private PlayerLife playerLife;
-    private GameManager gameManager;
+    private Inventory inventory;
     private List<Key> playerKeys = new List<Key>();
     private bool canMove = true;
 
     void Start()
     {
+        // Initialize components
+        playerInput = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
         playerAttack = GetComponent<PlayerAttack>();
         playerLife = GetComponent<PlayerLife>();
-        gameManager = FindObjectOfType<GameManager>();
+        inventory = FindObjectOfType<GameManager>()?.GetInventory();
 
-        if (gameManager != null)
+        if (inventory == null)
         {
-            inventory = gameManager.GetInventory();
-        }
-        else
-        {
-            Debug.LogError("GameManager not found!");
+            Debug.LogError("Inventory not found!");
         }
 
+        // Subscribe to input events
+        playerInput.OnMoveInput += (direction) => { if (canMove) playerMovement.HandleMovement(direction); }; // Passer la direction
+        playerInput.OnAttackInput += () => { if (canMove) playerAttack.PerformAttack(playerInput.AttackDirection); };
+        playerInput.OnUseLeftItemInput += UseLeftItem;
+        playerInput.OnUseRightItemInput += UseRightItem;
+        playerInput.OnDebugPotionInput += ObtainPotion;
+        playerInput.OnDebugTakeDamageInput += () => playerLife.TakeDamage(1);
+
+        // Subscribe to game events
         GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
     }
 
@@ -41,67 +47,29 @@ public class PlayerController : MonoBehaviour
         canMove = !canMove;
     }
 
-    void Update()
+    private void UseLeftItem()
     {
-        if (canMove)
+        Item equippedItem = inventory.GetEquippedItem(true);
+        if (equippedItem != null)
         {
-            playerMovement.HandleMovement();
-
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                Item equippedItemLeft = inventory.GetEquippedItem(true);
-                if (equippedItemLeft != null)
-                {
-                    equippedItemLeft.Use();
-                }
-                else
-                {
-                    Debug.Log("No item equipped on Left Click.");
-                }
-            }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                Item equippedItemRight = inventory.GetEquippedItem(false);
-                if (equippedItemRight != null)
-                {
-                    equippedItemRight.Use();
-                }
-                else
-                {
-                    Debug.Log("No item equipped on Right Click.");
-                }
-            }
+            equippedItem.Use();
         }
-
-        DebugUpdate();
+        else
+        {
+            Debug.Log("No item equipped on Left Click.");
+        }
     }
 
-    void DebugUpdate()
+    private void UseRightItem()
     {
-        ///====================///
-        /// Debug test command ///
-        ///====================///
-
-        // RedPotion
-        if (Input.GetKeyDown(KeyCode.Z))
+        Item equippedItem = inventory.GetEquippedItem(false);
+        if (equippedItem != null)
         {
-            ObtainPotion(1);
+            equippedItem.Use();
         }
-        // BluePotion
-        if (Input.GetKeyDown(KeyCode.X))
+        else
         {
-            ObtainPotion(2);
-        }
-        // Fairy
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            ObtainPotion(3);
-        }
-        // Lose Heart
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            playerLife.TakeDamage(1);
+            Debug.Log("No item equipped on Right Click.");
         }
     }
 
@@ -118,19 +86,14 @@ public class PlayerController : MonoBehaviour
 
     public void ObtainPotion(int potion)
     {
-        for (int i = 0; i < inventory.items.Count; i++)
+        foreach (Item item in inventory.items)
         {
-            Item item = inventory.items[i];
-
-            if (item is Bottle bottle && bottle.IsEmpty() == true)
+            if (item is Bottle bottle && bottle.IsEmpty())
             {
-                if (potion == 1) {
-                    bottle.SetRedPotion();
-                } else if (potion == 2) {
-                    bottle.SetBluePotion();
-                } else if (potion == 3) {
-                    bottle.SetFairy();
-                }
+                if (potion == 1) bottle.SetRedPotion();
+                else if (potion == 2) bottle.SetBluePotion();
+                else if (potion == 3) bottle.SetFairy();
+                break;
             }
         }
     }

@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed;
-    private Vector2 movement;
+    [SerializeField] private float moveSpeed = 5f;
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 lastDirection;
@@ -21,42 +18,46 @@ public class PlayerMovement : MonoBehaviour
         isUsingItem = false;
         isOnWater = false;
         lastSafePosition = transform.position;
-
         animator.SetBool("isMoving", false);
     }
 
-    public void HandleMovement()
+    public void HandleMovement(Vector2 movement)
     {
-        movement.x = Input.GetAxisRaw("Horizontal") * moveSpeed;
-        movement.y = Input.GetAxisRaw("Vertical") * moveSpeed;
-
-        if (isOnWater && !isUsingItem)
+        // Si le joueur est sur l'eau, téléportation à la dernière position sûre
+        if (isOnWater)
         {
             transform.position = lastSafePosition;
             isOnWater = false;
+            rb.velocity = Vector2.zero; // Réinitialiser la vélocité
             return;
         }
 
+        // Mettre à jour la dernière position sûre
         if (!isOnWater)
         {
             lastSafePosition = transform.position;
         }
 
-        if (isUsingItem == false && (movement.x != 0 || movement.y != 0)) {
+        // Calculer la vélocité
+        Vector2 moveVelocity = isUsingItem ? Vector2.zero : movement * moveSpeed;
+
+        // Mettre à jour l'animation
+        if (moveVelocity != Vector2.zero)
+        {
             animator.SetBool("isMoving", true);
             lastDirection = movement.normalized;
-        } else {
-            movement.x = 0;
-            movement.y = 0;
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
             animator.SetFloat("lastX", lastDirection.x);
             animator.SetFloat("lastY", lastDirection.y);
-            animator.SetBool("isMoving", false);
         }
 
-        animator.SetFloat("xVelocity", movement.x);
-        animator.SetFloat("yVelocity", movement.y);
-
-        rb.velocity = movement;
+        // Appliquer la vélocité
+        animator.SetFloat("xVelocity", moveVelocity.x);
+        animator.SetFloat("yVelocity", moveVelocity.y);
+        rb.velocity = moveVelocity;
     }
 
     public Vector2 GetLastDirection()
@@ -67,5 +68,10 @@ public class PlayerMovement : MonoBehaviour
     public void UsingItem()
     {
         isUsingItem = !isUsingItem;
+    }
+
+    public void SetOnWater(bool onWater)
+    {
+        isOnWater = onWater;
     }
 }
