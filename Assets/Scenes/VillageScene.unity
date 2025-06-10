@@ -778,6 +778,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Octorock
       objectReference: {fileID: 0}
+    - target: {fileID: 4878220030867029173, guid: 1aa4ebf46ac7cd94480fbfa123530b75, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 7019796425781910725, guid: 1aa4ebf46ac7cd94480fbfa123530b75, type: 3}
       propertyPath: maxShootInterval
       value: 6
