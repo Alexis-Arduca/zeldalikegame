@@ -22,7 +22,7 @@ public class OctorockProjectile : MonoBehaviour
 
     public void SetDirection(Vector2 direction, float speed)
     {
-        rb.velocity = direction * speed;
+        rb.linearVelocity = direction * speed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

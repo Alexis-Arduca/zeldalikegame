@@ -40,7 +40,7 @@ public class Cucoo : MonoBehaviour
                 Drop();
             }
     
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             if (isPickedUp && playerTransform != null)
             {
                 transform.position = playerTransform.position + new Vector3(0, 0.5f, 0);
@@ -51,11 +51,11 @@ public class Cucoo : MonoBehaviour
         if (moveTimer > 0)
         {
             moveTimer -= Time.deltaTime;
-            rb.velocity = moveDirection * moveSpeed;
+            rb.linearVelocity = moveDirection * moveSpeed;
 
             if (moveTimer <= 0)
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 waitTimer = waitTime;
             }
         }

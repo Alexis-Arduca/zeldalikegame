@@ -10,6 +10,10 @@ public class PlayerController : MonoBehaviour
     private Inventory inventory;
     private List<Key> playerKeys = new List<Key>();
     private bool canMove = true;
+    private bool hasShield = true;
+    private bool isShieldActive = false;
+    private Vector2 shieldDirection;
+    private float shieldSpeedReduction = 0.5f;
 
     void Start()
     {
@@ -24,11 +28,26 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("Inventory not found!");
         }
 
-        playerInput.OnMoveInput += (direction) => { if (canMove) playerMovement.HandleMovement(direction); };
-        playerInput.OnAttackInput += () => { if (canMove) playerAttack.PerformAttack(playerInput.AttackDirection); };
+        playerInput.OnMoveInput += (direction) =>
+        {
+            if (canMove)
+            {
+                if (isShieldActive)
+                {
+                    playerMovement.HandleMovement(direction * shieldSpeedReduction);
+                }
+                else
+                {
+                    playerMovement.HandleMovement(direction);
+                }
+            }
+        };
+        playerInput.OnAttackInput += () => { if (canMove && !isShieldActive) playerAttack.PerformAttack(playerInput.AttackDirection); };
         playerInput.OnUseLeftItemInput += UseLeftItem;
         playerInput.OnUseRightItemInput += UseRightItem;
         playerInput.OnDebugPotionInput += ObtainPotion;
+
+        playerInput.OnShieldInput += HandleShield;
 
         GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
     }
@@ -36,11 +55,43 @@ public class PlayerController : MonoBehaviour
     void OnDisable()
     {
         GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+        playerInput.OnShieldInput -= HandleShield;
     }
 
     private void OnActionChange()
     {
         canMove = !canMove;
+        if (!canMove && isShieldActive)
+        {
+            isShieldActive = false;
+            UpdateShieldState();
+        }
+    }
+
+    private void HandleShield(bool isPressed)
+    {
+        if (!hasShield) return;
+
+        isShieldActive = isPressed;
+        if (isShieldActive)
+        {
+            shieldDirection = playerInput.AttackDirection.normalized;
+            if (shieldDirection == Vector2.zero)
+            {
+                shieldDirection = playerMovement.GetLastDirection();
+            }
+        }
+        UpdateShieldState();
+    }
+
+    private void UpdateShieldState()
+    {
+        playerMovement.SetShieldState(isShieldActive, shieldDirection);
+    }
+
+    public bool ShieldState()
+    {
+        return isShieldActive;
     }
 
     private void UseLeftItem()
@@ -77,7 +128,7 @@ public class PlayerController : MonoBehaviour
     public void ObtainItem(Item item)
     {
         inventory.AddItem(item);
-        Debug.Log($"Item obtenu: {item.itemName}");
+        Debug.Log($"Item get: {item.itemName}");
     }
 
     public void ObtainPotion(int potion)
@@ -97,5 +148,20 @@ public class PlayerController : MonoBehaviour
     public void ObtainNewKey(Key newKey)
     {
         playerKeys.Add(newKey);
+    }
+
+    public void ObtainShield()
+    {
+        hasShield = true;
+    }
+
+    public bool IsShieldActive()
+    {
+        return isShieldActive;
+    }
+
+    public Vector2 GetShieldDirection()
+    {
+        return shieldDirection;
     }
 }

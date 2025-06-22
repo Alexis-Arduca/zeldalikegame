@@ -92,6 +92,7 @@ public class PlayerLife : MonoBehaviour
     public void TakeDamage(double attack)
     {
         if (isInvincible) return;
+        if (GetComponent<PlayerController>().ShieldState()) return;
 
         isInvincible = true;
         double damage = Math.Max(attack - defense, 0);

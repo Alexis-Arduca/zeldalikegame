@@ -147,7 +147,7 @@ public abstract class Enemy : MonoBehaviour
         {
             currentState = EnemyState.Frozen;
             freezeTimer = duration;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             GetComponent<SpriteRenderer>().color = Color.cyan;
         }
     }

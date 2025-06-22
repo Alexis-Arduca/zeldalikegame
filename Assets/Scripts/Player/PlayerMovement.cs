@@ -3,12 +3,15 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float shieldSpeedReduction = 0.5f;
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 lastDirection;
     private bool isUsingItem;
     private bool isOnWater;
     private Vector2 lastSafePosition;
+    private bool isShieldActive;
+    private Vector2 shieldDirection;
 
     void Start()
     {
@@ -17,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
         lastDirection = Vector2.down;
         isUsingItem = false;
         isOnWater = false;
+        isShieldActive = false;
         lastSafePosition = transform.position;
         animator.SetBool("isMoving", false);
     }
@@ -27,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.position = lastSafePosition;
             isOnWater = false;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             return;
         }
 
@@ -36,23 +40,29 @@ public class PlayerMovement : MonoBehaviour
             lastSafePosition = transform.position;
         }
 
-        Vector2 moveVelocity = isUsingItem ? Vector2.zero : movement * moveSpeed;
+        float currentSpeed = isShieldActive ? moveSpeed * shieldSpeedReduction : moveSpeed;
+        Vector2 moveVelocity = isUsingItem ? Vector2.zero : movement * currentSpeed;
 
         if (moveVelocity != Vector2.zero)
         {
             animator.SetBool("isMoving", true);
-            lastDirection = movement.normalized;
+            if (!isShieldActive)
+            {
+                lastDirection = movement.normalized;
+            }
         }
         else
         {
             animator.SetBool("isMoving", false);
-            animator.SetFloat("lastX", lastDirection.x);
-            animator.SetFloat("lastY", lastDirection.y);
+
+            Vector2 directionToUse = isShieldActive ? shieldDirection : lastDirection;
+            animator.SetFloat("lastX", directionToUse.x);
+            animator.SetFloat("lastY", directionToUse.y);
         }
 
         animator.SetFloat("xVelocity", moveVelocity.x);
         animator.SetFloat("yVelocity", moveVelocity.y);
-        rb.velocity = moveVelocity;
+        rb.linearVelocity = moveVelocity;
     }
 
     public Vector2 GetLastDirection()
@@ -68,5 +78,17 @@ public class PlayerMovement : MonoBehaviour
     public void SetOnWater(bool onWater)
     {
         isOnWater = onWater;
+    }
+
+    public void SetShieldState(bool active, Vector2 direction)
+    {
+        isShieldActive = active;
+        shieldDirection = direction;
+
+        if (isShieldActive)
+        {
+            animator.SetFloat("lastX", shieldDirection.x);
+            animator.SetFloat("lastY", shieldDirection.y);
+        }
     }
 }
