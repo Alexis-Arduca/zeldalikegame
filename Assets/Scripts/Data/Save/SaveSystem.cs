@@ -56,8 +56,6 @@ public static class SaveSystem
         data.magicLevel = magic.GetCurrentLevel();
 
         data.hasShield = true;
-        data.isShieldActive = player.IsShieldActive();
-        data.shieldDirection = player.GetShieldDirection();
 
         data.lastPosition = player.transform.position;
 

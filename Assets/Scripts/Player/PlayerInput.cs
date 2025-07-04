@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System;
 
 public class PlayerInput : MonoBehaviour
@@ -7,68 +8,40 @@ public class PlayerInput : MonoBehaviour
     public Action OnAttackInput { get; set; }
     public Action OnUseLeftItemInput { get; set; }
     public Action OnUseRightItemInput { get; set; }
-    public Action<int> OnDebugPotionInput { get; set; }
-    public Action OnDebugTakeDamageInput { get; set; }
     public Action<bool> OnShieldInput { get; set; }
 
-    public Vector2 MoveDirection { get; private set; }
-    public Vector2 AttackDirection { get; private set; }
+    private PlayerInputAction inputActions;
+    
+    private const float moveDeadzone = 0.2f;
 
-    void Update()
+    private void Awake()
     {
-        HandleMovementInput();
-        HandleAttackInput();
-        HandleItemInput();
-        HandleShieldInput();
-        HandleDebugInput();
-    }
+        inputActions = new PlayerInputAction();
+        inputActions.Player.Enable();
 
-    private void HandleMovementInput()
-    {
-        MoveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
-        OnMoveInput?.Invoke(MoveDirection);
-    }
-
-    private void HandleAttackInput()
-    {
-        if (Input.GetMouseButtonDown(0))
+        inputActions.Player.Move.performed += ctx =>
         {
-            AttackDirection = GetAttackDirection();
-            OnAttackInput?.Invoke();
-        }
-    }
+            Vector2 input = ctx.ReadValue<Vector2>();
+            OnMoveInput?.Invoke(input.normalized);
+        };
 
-    private Vector2 GetAttackDirection()
-    {
-        if (Input.GetKey(KeyCode.UpArrow)) return Vector2.up;
-        if (Input.GetKey(KeyCode.DownArrow)) return Vector2.down;
-        if (Input.GetKey(KeyCode.LeftArrow)) return Vector2.left;
-        if (Input.GetKey(KeyCode.RightArrow)) return Vector2.right;
-        return Vector2.right;
-    }
-
-    private void HandleItemInput()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
+        inputActions.Player.Move.canceled += ctx =>
         {
-            OnUseLeftItemInput?.Invoke();
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            OnUseRightItemInput?.Invoke();
-        }
+            OnMoveInput?.Invoke(Vector2.zero);
+        };
+
+
+        inputActions.Player.Interact.performed += ctx => GameEventsManager.instance.playerEvents.OnPlayerInteract();
+        inputActions.Player.Menu.performed += ctx => GameEventsManager.instance.playerEvents.OnPlayerOpenMenu();
+
+        inputActions.Player.Sword.performed += ctx => OnAttackInput?.Invoke();
+        inputActions.Player.Shield.performed += ctx => OnShieldInput?.Invoke(true);
+        inputActions.Player.Shield.canceled += ctx => OnShieldInput?.Invoke(false);
+
+        inputActions.Player.LeftItem.performed += ctx => OnUseLeftItemInput?.Invoke();
+        inputActions.Player.RightItem.performed += ctx => OnUseRightItemInput?.Invoke();
     }
 
-    private void HandleShieldInput()
-    {
-        OnShieldInput?.Invoke(Input.GetKey(KeyCode.B));
-    }
-
-    private void HandleDebugInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Z)) OnDebugPotionInput?.Invoke(1);
-        if (Input.GetKeyDown(KeyCode.X)) OnDebugPotionInput?.Invoke(2);
-        if (Input.GetKeyDown(KeyCode.C)) OnDebugPotionInput?.Invoke(3);
-        if (Input.GetKeyDown(KeyCode.N)) OnDebugTakeDamageInput?.Invoke();
-    }
+    private void OnEnable() => inputActions.Player.Enable();
+    private void OnDisable() => inputActions.Player.Disable();
 }

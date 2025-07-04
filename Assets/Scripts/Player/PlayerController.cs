@@ -6,65 +6,38 @@ public class PlayerController : MonoBehaviour
     private PlayerInput playerInput;
     private PlayerMovement playerMovement;
     private PlayerAttack playerAttack;
-    private PlayerLife playerLife;
     private Inventory inventory;
-    private List<Key> playerKeys = new List<Key>();
     private bool canMove = true;
     private bool hasShield = true;
-    private bool isShieldActive = false;
+    public bool isShieldActive = false;
     private Vector2 shieldDirection;
     private float shieldSpeedReduction = 0.5f;
+
+    private List<Key> playerKeys = new List<Key>();
 
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
         playerAttack = GetComponent<PlayerAttack>();
-        playerLife = GetComponent<PlayerLife>();
-        inventory = Object.FindFirstObjectByType<GameManager>()?.GetInventory();
+        inventory = FindFirstObjectByType<GameManager>()?.GetInventory();
 
-        if (inventory == null)
-        {
-            Debug.LogError("Inventory not found!");
-        }
+        if (inventory == null) Debug.LogError("Inventory not found!");
 
-        playerInput.OnMoveInput += (direction) =>
-        {
-            if (canMove)
-            {
-                if (isShieldActive)
-                {
-                    playerMovement.HandleMovement(direction * shieldSpeedReduction);
-                }
-                else
-                {
-                    playerMovement.HandleMovement(direction);
-                }
-            }
-        };
-        playerInput.OnAttackInput += () => { if (canMove && !isShieldActive) playerAttack.PerformAttack(playerInput.AttackDirection); };
+        playerInput.OnMoveInput += Move;
+        playerInput.OnAttackInput += Attack;
         playerInput.OnUseLeftItemInput += UseLeftItem;
         playerInput.OnUseRightItemInput += UseRightItem;
-        playerInput.OnDebugPotionInput += ObtainPotion;
-
         playerInput.OnShieldInput += HandleShield;
-
-        GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
     }
 
     void OnDisable()
     {
-        GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+        playerInput.OnMoveInput -= Move;
+        playerInput.OnAttackInput -= Attack;
+        playerInput.OnUseLeftItemInput -= UseLeftItem;
+        playerInput.OnUseRightItemInput -= UseRightItem;
         playerInput.OnShieldInput -= HandleShield;
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.L)) // Save Test
-        {
-            SaveSystem.SavePlayer(this);
-            Debug.Log("Game saved!");
-        }
     }
 
     public void LoadFromData(PlayerData data)
@@ -88,15 +61,31 @@ public class PlayerController : MonoBehaviour
         shieldDirection = data.shieldDirection;
     }
 
-
-    private void OnActionChange()
+    private void Move(Vector2 direction)
     {
-        canMove = !canMove;
-        if (!canMove && isShieldActive)
+        if (canMove)
         {
-            isShieldActive = false;
-            UpdateShieldState();
+            playerMovement.HandleMovement(isShieldActive ? direction * shieldSpeedReduction : direction);
         }
+    }
+
+    private void Attack()
+    {
+        if (canMove && !isShieldActive) playerAttack.PerformAttack(Vector2.right);
+    }
+
+    private void UseLeftItem()
+    {
+        var item = inventory?.GetEquippedItem(true);
+        if (item != null) item.Use();
+        else Debug.Log("No item equipped on Left Click.");
+    }
+
+    private void UseRightItem()
+    {
+        var item = inventory?.GetEquippedItem(false);
+        if (item != null) item.Use();
+        else Debug.Log("No item equipped on Right Click.");
     }
 
     private void HandleShield(bool isPressed)
@@ -104,51 +93,13 @@ public class PlayerController : MonoBehaviour
         if (!hasShield) return;
 
         isShieldActive = isPressed;
-        if (isShieldActive)
-        {
-            shieldDirection = playerInput.AttackDirection.normalized;
-            if (shieldDirection == Vector2.zero)
-            {
-                shieldDirection = playerMovement.GetLastDirection();
-            }
-        }
+        if (isShieldActive) shieldDirection = Vector2.right;
         UpdateShieldState();
     }
 
     private void UpdateShieldState()
     {
         playerMovement.SetShieldState(isShieldActive, shieldDirection);
-    }
-
-    public bool ShieldState()
-    {
-        return isShieldActive;
-    }
-
-    private void UseLeftItem()
-    {
-        Item equippedItem = inventory.GetEquippedItem(true);
-        if (equippedItem != null)
-        {
-            equippedItem.Use();
-        }
-        else
-        {
-            Debug.Log("No item equipped on Left Click.");
-        }
-    }
-
-    private void UseRightItem()
-    {
-        Item equippedItem = inventory.GetEquippedItem(false);
-        if (equippedItem != null)
-        {
-            equippedItem.Use();
-        }
-        else
-        {
-            Debug.Log("No item equipped on Right Click.");
-        }
     }
 
     public Inventory GetInventory()
@@ -184,15 +135,5 @@ public class PlayerController : MonoBehaviour
     public void ObtainShield()
     {
         hasShield = true;
-    }
-
-    public bool IsShieldActive()
-    {
-        return isShieldActive;
-    }
-
-    public Vector2 GetShieldDirection()
-    {
-        return shieldDirection;
     }
 }

@@ -4,15 +4,32 @@ using System;
 
 public class LifeUI : MonoBehaviour
 {
-    public PlayerLife playerLife;
+    private bool playerLoad = false;
+    private PlayerLife playerLife;
     public Image[] heartImages;
     public Sprite fullHeartSprite;
     public Sprite halfHeartSprite;
     public Sprite emptyHeartSprite;
 
+    void Start()
+    {
+        GameEventsManager.instance.playerEvents.onPlayerSpawn += InitPlayerLife;
+    }
+
+    void OnDisable()
+    {
+        GameEventsManager.instance.playerEvents.onPlayerSpawn -= InitPlayerLife;
+    }
+
     void Update()
     {
-        UpdateHearts();
+        if (playerLoad) { UpdateHearts(); }
+    }
+
+    private void InitPlayerLife()
+    {
+        playerLife = FindAnyObjectByType<PlayerLife>();
+        playerLoad = true;
     }
 
     void UpdateHearts()

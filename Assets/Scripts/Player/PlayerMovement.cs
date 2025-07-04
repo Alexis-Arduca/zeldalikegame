@@ -29,41 +29,35 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isOnWater)
         {
+            rb.linearVelocity = Vector2.zero;
             transform.position = lastSafePosition;
             isOnWater = false;
-            rb.linearVelocity = Vector2.zero;
             return;
         }
 
-        if (!isOnWater)
-        {
-            lastSafePosition = transform.position;
-        }
+        lastSafePosition = transform.position;
 
         float currentSpeed = isShieldActive ? moveSpeed * shieldSpeedReduction : moveSpeed;
         Vector2 moveVelocity = isUsingItem ? Vector2.zero : movement * currentSpeed;
 
-        if (moveVelocity != Vector2.zero)
+        bool isMoving = moveVelocity != Vector2.zero;
+
+        animator.SetBool("isMoving", isMoving);
+        rb.linearVelocity = moveVelocity;
+
+        if (isMoving)
         {
-            animator.SetBool("isMoving", true);
             if (!isShieldActive)
-            {
                 lastDirection = movement.normalized;
-            }
-        }
-        else
-        {
-            animator.SetBool("isMoving", false);
-
-            Vector2 directionToUse = isShieldActive ? shieldDirection : lastDirection;
-            animator.SetFloat("lastX", directionToUse.x);
-            animator.SetFloat("lastY", directionToUse.y);
         }
 
+        Vector2 directionToUse = isShieldActive ? shieldDirection : lastDirection;
         animator.SetFloat("xVelocity", moveVelocity.x);
         animator.SetFloat("yVelocity", moveVelocity.y);
-        rb.linearVelocity = moveVelocity;
+        animator.SetFloat("lastX", directionToUse.x);
+        animator.SetFloat("lastY", directionToUse.y);
     }
+
 
     public Vector2 GetLastDirection()
     {

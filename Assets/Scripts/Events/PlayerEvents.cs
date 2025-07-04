@@ -11,4 +11,31 @@ public class PlayerEvents
             onActionState();
         }
     }
+
+    public event Action onPlayerSpawn;
+    public void OnPlayerSpawn()
+    {
+        if (onPlayerSpawn != null)
+        {
+            onPlayerSpawn();
+        }
+    }
+
+    public event Action onPlayerOpenMenu;
+    public void OnPlayerOpenMenu()
+    {
+        if (onPlayerOpenMenu != null)
+        {
+            onPlayerOpenMenu();
+        }
+    }
+
+    public event Action onPlayerInteract;
+    public void OnPlayerInteract()
+    {
+        if (onPlayerInteract != null)
+        {
+            onPlayerInteract();
+        }
+    }
 }

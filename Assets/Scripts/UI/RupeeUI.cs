@@ -4,21 +4,28 @@ using TMPro;
 
 public class RupeeUI : MonoBehaviour
 {
-    public RupeeManager rupeeBag;
+    private RupeeManager rupeeBag;
     public TMP_Text rupeeText;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (rupeeBag == null)
-        {
-            Debug.LogError("RupeeManager not assigned.");
-        }
-
         if (rupeeText == null)
         {
-            Debug.LogError("Text not assigned.");
+            Debug.LogError("Text 'RupeeText' missing.");
         }
+
+        GameEventsManager.instance.playerEvents.onPlayerSpawn += LoadRupeeBag;
+    }
+
+    void OnDisable()
+    {
+        GameEventsManager.instance.playerEvents.onPlayerSpawn -= LoadRupeeBag;
+    }
+
+    private void LoadRupeeBag()
+    {
+        rupeeBag = FindAnyObjectByType<RupeeManager>();
     }
 
     // Update is called once per frame

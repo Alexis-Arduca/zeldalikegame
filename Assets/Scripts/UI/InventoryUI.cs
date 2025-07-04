@@ -24,7 +24,7 @@ public class InventoryUI : MonoBehaviour
         inventoryPanel.SetActive(false);
         selectedIndex = 0;
 
-        GameManager gameManager = FindObjectOfType<GameManager>();
+        GameManager gameManager = Object.FindFirstObjectByType<GameManager>();
         if (gameManager != null)
         {
             inventory = gameManager.GetInventory();
@@ -38,11 +38,13 @@ public class InventoryUI : MonoBehaviour
         UpdateEquippedImages();
 
         GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
+        GameEventsManager.instance.playerEvents.onPlayerOpenMenu += ToggleInventoryAndQuestMenu;
     }
 
     void OnDisable()
     {
         GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
+        GameEventsManager.instance.playerEvents.onPlayerOpenMenu -= ToggleInventoryAndQuestMenu;
     }
 
     private void OnActionChange()
@@ -54,11 +56,6 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K) && canOpenInv) 
-        {
-            ToggleInventoryAndQuestMenu();
-        }
-
         if (inventoryPanel.activeSelf)
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
@@ -85,15 +82,18 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    void ToggleInventoryAndQuestMenu()
+    public void ToggleInventoryAndQuestMenu()
     {
-        bool isActive = !inventoryPanel.activeSelf;
-        inventoryPanel.SetActive(isActive);
-        
-        if (isActive)
+        if (canOpenInv)
         {
-            selectedIndex = 0;
-            UpdateItemDisplay();
+            bool isActive = !inventoryPanel.activeSelf;
+            inventoryPanel.SetActive(isActive);
+            
+            if (isActive)
+            {
+                selectedIndex = 0;
+                UpdateItemDisplay();
+            }
         }
     }
 
