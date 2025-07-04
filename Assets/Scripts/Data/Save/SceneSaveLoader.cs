@@ -20,22 +20,15 @@ public class SceneSaveLoader : MonoBehaviour
     {
         if (!File.Exists(SavePath))
         {
-            Debug.LogWarning("Aucune sauvegarde trouvée à charger.");
-            return;
-        }
+            return; }
 
         string json = File.ReadAllText(SavePath);
         PlayerData data = JsonUtility.FromJson<PlayerData>(json);
 
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null)
         {
             player.LoadFromData(data);
-            Debug.Log("Sauvegarde chargée depuis le fichier.");
-        }
-        else
-        {
-            Debug.LogError("Aucun PlayerController trouvé dans la scène.");
         }
     }
 }

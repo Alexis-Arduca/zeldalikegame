@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         playerAttack = GetComponent<PlayerAttack>();
         playerLife = GetComponent<PlayerLife>();
-        inventory = FindObjectOfType<GameManager>()?.GetInventory();
+        inventory = Object.FindFirstObjectByType<GameManager>()?.GetInventory();
 
         if (inventory == null)
         {
@@ -60,17 +60,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L)) // Sauvegarde
+        if (Input.GetKeyDown(KeyCode.L)) // Save Test
         {
             SaveSystem.SavePlayer(this);
             Debug.Log("Game saved!");
         }
-
-        if (Input.GetKeyDown(KeyCode.K)) // Chargement
-        {
-            Debug.Log("Game loaded!");
-            LoadFromData(SaveSystem.LoadPlayer());
-        }   
     }
 
     public void LoadFromData(PlayerData data)
@@ -86,7 +80,7 @@ public class PlayerController : MonoBehaviour
         PlayerResources ressources = GetComponent<PlayerResources>();
         ressources.LoadRessources(data);
 
-        Inventory myInv = FindObjectOfType<GameManager>()?.GetComponent<Inventory>();
+        Inventory myInv = Object.FindFirstObjectByType<GameManager>()?.GetComponent<Inventory>();
         myInv.LoadInventory(data.inventoryItems);
 
         hasShield = data.hasShield;

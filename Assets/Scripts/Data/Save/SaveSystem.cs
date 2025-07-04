@@ -45,7 +45,6 @@ public static class SaveSystem
     {
         PlayerData data = new PlayerData();
 
-        // Exemple: suppose que PlayerLife et PlayerMagic ont des getters
         PlayerLife life = player.GetComponent<PlayerLife>();
         data.currentHealth = life.GetCurrentHeart();
         data.maxHealth = life.GetMaxHeart();
@@ -72,7 +71,6 @@ public static class SaveSystem
         data.maxBomb = ressources.maxBomb;
         data.bombBagLevel = ressources.bombBagLevel;
 
-        // INVENTAIRE
         Inventory inventory = player.GetInventory();
         foreach (Item item in inventory.items)
         {

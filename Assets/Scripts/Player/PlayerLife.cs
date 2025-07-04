@@ -29,7 +29,7 @@ public class PlayerLife : MonoBehaviour
         currentHeart = DEFAULT_CURRENT_HEART;
         heartFragment = 0;
         defense = 0;
-        inventory = FindObjectOfType<GameManager>()?.GetInventory();
+        inventory = FindFirstObjectByType<GameManager>()?.GetInventory();
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
 
