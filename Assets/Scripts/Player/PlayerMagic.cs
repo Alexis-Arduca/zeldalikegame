@@ -26,6 +26,13 @@ public class PlayerMagic : MonoBehaviour
         GameEventsManager.instance.magicEvents.onMagicUsed -= ConsumeMagic;
     }
 
+    public void LoadMagic(int loadCurrent, int loadMax, int loadLevel)
+    {
+        currentMagic = loadCurrent;
+        maxMagic = loadMax;
+        magicLevel = loadLevel;
+    }
+
     public void RefillMagic(int value)
     {
         currentMagic = Mathf.Clamp(currentMagic + value, 0, maxMagic);
@@ -39,6 +46,7 @@ public class PlayerMagic : MonoBehaviour
     }
 
     public int GetCurrentMagic() => currentMagic;
+    public int GetMaxMagic() => maxMagic;
     public int GetCurrentLevel() => magicLevel;
 
     public void UpgradeMagicLevel()

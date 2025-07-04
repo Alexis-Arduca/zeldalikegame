@@ -7,12 +7,12 @@ public class PlayerResources : MonoBehaviour
     private const int DEFAULT_QUIVER_LEVEL = 1;
     private const int DEFAULT_BOMB_BAG_LEVEL = 1;
 
-    private int currentArrow;
-    private int maxArrow;
-    private int quiverLevel;
-    private int currentBomb;
-    private int maxBomb;
-    private int bombBagLevel;
+    public int currentArrow;
+    public int maxArrow;
+    public int quiverLevel;
+    public int currentBomb;
+    public int maxBomb;
+    public int bombBagLevel;
 
     void Start()
     {
@@ -31,6 +31,16 @@ public class PlayerResources : MonoBehaviour
     {
         GameEventsManager.instance.collectibleEvents.onArrowCollected -= RefillArrow;
         GameEventsManager.instance.collectibleEvents.onBombCollected -= RefillBomb;
+    }
+
+    public void LoadRessources(PlayerData ressources)
+    {
+        currentArrow = ressources.currentArrow;
+        maxArrow = ressources.maxArrow;
+        quiverLevel = ressources.quiverLevel;
+        currentBomb = ressources.currentBomb;
+        maxBomb = ressources.maxBomb;
+        bombBagLevel = ressources.bombBagLevel;
     }
 
     public bool UseBow()

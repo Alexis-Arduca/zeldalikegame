@@ -18,7 +18,7 @@ public class LifeUI : MonoBehaviour
     void UpdateHearts()
     {
         double currentHearts = playerLife.GetCurrentHeart();
-        int maxHearts = (int)System.Math.Ceiling(playerLife.GetMaxHeart());
+        int maxHearts = playerLife.GetMaxHeart();
 
         for (int i = 0; i < heartImages.Length; i++)
         {

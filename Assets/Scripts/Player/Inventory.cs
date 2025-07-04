@@ -15,6 +15,25 @@ public class Inventory
         availableItems = new List<Item>();
     }
 
+    public void LoadInventory(List<ItemData> inventoryItems)
+    {
+        items.Clear();
+
+        foreach (ItemData itemData in inventoryItems)
+        {
+            Item match = availableItems.Find(i => i.itemName == itemData.itemId);
+            if (match != null)
+            {
+                Item instance = Object.Instantiate(match);
+                items.Add(instance);
+            }
+            else
+            {
+                Debug.LogWarning($"Item '{itemData.itemId}' not found in availableItems.");
+            }
+        }
+    }
+
     public void AddItem(Item item)
     {
         if (item != null && !items.Contains(item))

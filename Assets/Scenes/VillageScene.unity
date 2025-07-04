@@ -510,6 +510,50 @@ MonoBehaviour:
   questListText: {fileID: 303613781}
   questManager: {fileID: 561344633}
   sideQuestManager: {fileID: 561344627}
+--- !u!1 &791586214
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 791586216}
+  - component: {fileID: 791586215}
+  m_Layer: 0
+  m_Name: SaveLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &791586215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791586214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67f8a94f9bf442041a51027327d495b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &791586216
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791586214}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 939.2923, y: 514.7456, z: -5.3109264}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &904062308 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2187402624485469700, guid: 15fa8dc35f229854bbde603cf4434800, type: 3}
@@ -752,6 +796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cc84d23e810b144892dc588b6c2f958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heartFragment: 0
   isInvincible: 0
   invincibilityDuration: 1
   flickerSpeed: 0.1
@@ -791,6 +836,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7824af510a7bb854b97fe414b2cc55f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentArrow: 0
+  maxArrow: 0
+  quiverLevel: 0
+  currentBomb: 0
+  maxBomb: 0
+  bombBagLevel: 0
 --- !u!114 &1443156458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1777,3 +1828,4 @@ SceneRoots:
   - {fileID: 1651732674}
   - {fileID: 8870924847977546575}
   - {fileID: 1665239401}
+  - {fileID: 791586216}

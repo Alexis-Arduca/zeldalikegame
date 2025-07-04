@@ -13,7 +13,7 @@ public class PlayerLife : MonoBehaviour
     private int maxHeart;
     private double currentHeart;
     private int defense;
-    private int heartFragment;
+    public int heartFragment;
 
     public bool isInvincible = false;
 
@@ -44,6 +44,13 @@ public class PlayerLife : MonoBehaviour
     void OnDisable()
     {
         GameEventsManager.instance.collectibleEvents.onRecoveryHeartCollected -= HealFromCollectible;
+    }
+
+    public void LoadPlayerLife(int loadMax, double loadCurrent, int loadFragment)
+    {
+        maxHeart = loadMax;
+        currentHeart = loadCurrent;
+        heartFragment = loadFragment;
     }
 
     void Update()
@@ -86,7 +93,7 @@ public class PlayerLife : MonoBehaviour
         currentHeart = Math.Min(currentHeart + heal, maxHeart);
     }
 
-    public double GetMaxHeart() => maxHeart;
+    public int GetMaxHeart() => maxHeart;
     public double GetCurrentHeart() => currentHeart;
 
     public void TakeDamage(double attack)

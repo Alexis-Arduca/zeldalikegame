@@ -58,6 +58,43 @@ public class PlayerController : MonoBehaviour
         playerInput.OnShieldInput -= HandleShield;
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) // Sauvegarde
+        {
+            SaveSystem.SavePlayer(this);
+            Debug.Log("Game saved!");
+        }
+
+        if (Input.GetKeyDown(KeyCode.K)) // Chargement
+        {
+            Debug.Log("Game loaded!");
+            LoadFromData(SaveSystem.LoadPlayer());
+        }   
+    }
+
+    public void LoadFromData(PlayerData data)
+    {
+        transform.position = data.lastPosition;
+
+        PlayerLife life = GetComponent<PlayerLife>();
+        life.LoadPlayerLife(data.maxHealth, data.currentHealth, data.fragment);
+
+        PlayerMagic magic = GetComponent<PlayerMagic>();
+        magic.LoadMagic(data.currentMagic, data.maxMagic, data.magicLevel);
+
+        PlayerResources ressources = GetComponent<PlayerResources>();
+        ressources.LoadRessources(data);
+
+        Inventory myInv = FindObjectOfType<GameManager>()?.GetComponent<Inventory>();
+        myInv.LoadInventory(data.inventoryItems);
+
+        hasShield = data.hasShield;
+        isShieldActive = data.isShieldActive;
+        shieldDirection = data.shieldDirection;
+    }
+
+
     private void OnActionChange()
     {
         canMove = !canMove;
