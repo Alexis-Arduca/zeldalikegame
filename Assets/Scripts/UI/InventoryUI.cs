@@ -21,7 +21,6 @@ public class InventoryUI : MonoBehaviour
 
     void Start()
     {
-        inventoryPanel.SetActive(false);
         selectedIndex = 0;
 
         GameManager gameManager = Object.FindFirstObjectByType<GameManager>();
@@ -36,63 +35,27 @@ public class InventoryUI : MonoBehaviour
 
         UpdateItemDisplay();
         UpdateEquippedImages();
-
-        GameEventsManager.instance.playerEvents.onActionState += OnActionChange;
-        GameEventsManager.instance.playerEvents.onPlayerOpenMenu += ToggleInventoryAndQuestMenu;
-    }
-
-    void OnDisable()
-    {
-        GameEventsManager.instance.playerEvents.onActionState -= OnActionChange;
-        GameEventsManager.instance.playerEvents.onPlayerOpenMenu -= ToggleInventoryAndQuestMenu;
-    }
-
-    private void OnActionChange()
-    {
-        canOpenInv = !canOpenInv;
-
-        if (!canOpenInv) { inventoryPanel.SetActive(canOpenInv); }
     }
 
     void Update()
     {
-        if (inventoryPanel.activeSelf)
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+            bool isLeftClick = Input.GetMouseButtonDown(0);
+
+            foreach (Item item in inventory.items)
             {
-                bool isLeftClick = Input.GetMouseButtonDown(0);
+                int slotIndex = item.slotIndex;
 
-                foreach (Item item in inventory.items)
+                if (slotIndex >= 0 && slotIndex < itemImages.Length && itemImages[slotIndex].gameObject.activeSelf)
                 {
-                    int slotIndex = item.slotIndex;
-
-                    if (slotIndex >= 0 && slotIndex < itemImages.Length && itemImages[slotIndex].gameObject.activeSelf)
+                    if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition))
                     {
-                        if (RectTransformUtility.RectangleContainsScreenPoint(itemImages[slotIndex].rectTransform, Input.mousePosition))
-                        {
-                            selectedIndex = slotIndex;
-                            EquipSelectedItem(isLeftClick);
-                            questMenu.questMenuPanel.SetActive(!questMenu.questMenuPanel.activeSelf);
-                            ToggleInventoryAndQuestMenu();
-                            break;
-                        }
+                        selectedIndex = slotIndex;
+                        EquipSelectedItem(isLeftClick);
+                        break;
                     }
                 }
-            }
-        }
-    }
-
-    public void ToggleInventoryAndQuestMenu()
-    {
-        if (canOpenInv)
-        {
-            bool isActive = !inventoryPanel.activeSelf;
-            inventoryPanel.SetActive(isActive);
-            
-            if (isActive)
-            {
-                selectedIndex = 0;
-                UpdateItemDisplay();
             }
         }
     }

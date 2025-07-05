@@ -21,7 +21,7 @@ public class QuestMenu : MonoBehaviour
 
     private void Start()
     {
-        questMenuPanel.SetActive(false);
+        // questMenuPanel.SetActive(false);
 
         mainQuestTab.onClick.AddListener(ShowMainQuests);
         sideQuestTab.onClick.AddListener(ShowSideQuests);

@@ -10,7 +10,6 @@ public static class SaveSystem
         PlayerData data = CreatePlayerData(player);
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
-        Debug.Log("Game saved at " + SavePath);
     }
 
     public static PlayerData LoadPlayer()
