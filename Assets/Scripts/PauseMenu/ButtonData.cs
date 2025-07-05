@@ -2,50 +2,39 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class ButtonData : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler
+public class ButtonData : MonoBehaviour, ISelectHandler, IPointerEnterHandler
 {
     public GameObject affiliateMenu;
     public List<GameObject> highlightedObjects;
-    private bool isSelected;
+    private ButtonGroupManager groupManager;
 
     void Start()
     {
+        groupManager = GetComponentInParent<ButtonGroupManager>();
+
         if (affiliateMenu != null) { affiliateMenu.SetActive(false); }
         foreach (GameObject o in highlightedObjects) { o.SetActive(false); }
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        isSelected = true;
-
-        if (affiliateMenu != null) { affiliateMenu.SetActive(true); }
-
-        HighlightsObjects(true);
+        groupManager?.SetSelected(this);
+        ShowHighlight(true);
     }
 
-    public void OnDeselect(BaseEventData eventData)
+    public void DeselectExternally()
     {
-        isSelected = false;
-
-        if (affiliateMenu != null) { affiliateMenu.SetActive(false); }
-
-        HighlightsObjects(false);
+        ShowHighlight(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        HighlightsObjects(true);
+        EventSystem.current.SetSelectedGameObject(gameObject);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    private void ShowHighlight(bool state)
     {
-        HighlightsObjects(false);
-    }
-
-    private void HighlightsObjects(bool state)
-    {
-        if (state == false && isSelected == true) { return; }
-
-        foreach (GameObject obj in highlightedObjects) { obj.SetActive(state); }
+        if (affiliateMenu != null) { affiliateMenu.SetActive(state); }
+        foreach (GameObject o in highlightedObjects) { o.SetActive(state); }
     }
 }

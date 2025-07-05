@@ -14,6 +14,7 @@ public class GameEventsManager : MonoBehaviour
     public CollectibleEvents collectibleEvents;
     public VillageEvents villageEvents;
     public CocoricoQuestEvents cocoricoQuestEvents;
+    public PauseEvents pauseEvents;
 
     private void Awake()
     {
@@ -33,5 +34,6 @@ public class GameEventsManager : MonoBehaviour
         collectibleEvents = new CollectibleEvents();
         villageEvents = new VillageEvents();
         cocoricoQuestEvents = new CocoricoQuestEvents();
+        pauseEvents = new PauseEvents();
     }
 }
