@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
         playerInput.OnUseLeftItemInput += UseLeftItem;
         playerInput.OnUseRightItemInput += UseRightItem;
         playerInput.OnShieldInput += HandleShield;
+
+        GameEventsManager.instance.playerEvents.onActionState += ChangeState;
     }
 
     void OnDisable()
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
         playerInput.OnUseLeftItemInput -= UseLeftItem;
         playerInput.OnUseRightItemInput -= UseRightItem;
         playerInput.OnShieldInput -= HandleShield;
+
+        GameEventsManager.instance.playerEvents.onActionState -= ChangeState;
     }
 
     public void LoadFromData(PlayerData data)
@@ -135,5 +139,10 @@ public class PlayerController : MonoBehaviour
     public void ObtainShield()
     {
         hasShield = true;
+    }
+
+    public void ChangeState()
+    {
+        canMove = !canMove;
     }
 }

@@ -21,7 +21,7 @@ public class PauseObject : MonoBehaviour
 
     private void OpenMenu()
     {
-        if (canOpenInv) { isActive = !isActive; menu.SetActive(isActive); }
+        if (canOpenInv) { isActive = !isActive; menu.SetActive(isActive); GameEventsManager.instance.playerEvents.OnActionChange(); }
     }
 
     private void OnActionChange()
